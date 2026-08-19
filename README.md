@@ -1,0 +1,2 @@
+# Swift Inventory - Godot Addon
+

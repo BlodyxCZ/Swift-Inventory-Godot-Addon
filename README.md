@@ -38,16 +38,6 @@ Build inventories with unmatched speed.
 
 ## 🧩 Architecture
 
-```mermaid
-flowchart LR
-    D[SwiftItemData] --> S[SwiftItemStack]
-    S --> I[SwiftInventory]
-    I --> G[SwiftGrid]
-    G --> SL[SwiftSlot]
-    SL -->|move / stack / swap / transfer| I
-    SL --> INFO[SwiftInfo]
-```
-
 | Class | Responsibility |
 | --- | --- |
 | `SwiftItemData` | Static item definition: ID, name, description, icon, tags and stack size |

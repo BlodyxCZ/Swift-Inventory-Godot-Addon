@@ -1,10 +1,12 @@
 [gd_scene format=3 uid="uid://e7w5ci5vbgb2"]
 
 [ext_resource type="Script" uid="uid://dnp6muoj3e72d" path="res://addons/Swift_Inventory/Classes/SwiftGrid.gd" id="1_gswx4"]
-[ext_resource type="Script" uid="uid://bhlr7fytm8cgs" path="res://addons/Swift_Inventory/Example/example_scene.gd" id="1_igf7w"]
 [ext_resource type="Script" uid="uid://bt3thfbc2njfp" path="res://addons/Swift_Inventory/Classes/SwiftSlot.gd" id="3_igf7w"]
 [ext_resource type="Resource" uid="uid://dwfa5idqnlndo" path="res://addons/Swift_Inventory/Example/chest_inventory.tres" id="3_xw31r"]
+[ext_resource type="Texture2D" uid="uid://u7ypwugovmsk" path="res://icon.svg" id="5_xw31r"]
 [ext_resource type="Resource" uid="uid://dtwuywatdmtxm" path="res://addons/Swift_Inventory/Example/player_inventory.tres" id="6_wpwti"]
+[ext_resource type="Script" uid="uid://bxikxeqm4i4e3" path="res://addons/Swift_Inventory/Example/example_info_panel.gd" id="7_6umnx"]
+[ext_resource type="Script" uid="uid://d23wkaooq0n8c" path="res://addons/Swift_Inventory/Classes/SwiftInfo.gd" id="7_wpwti"]
 
 [node name="ExampleScene" type="Control" unique_id=1552255554]
 layout_mode = 3
@@ -13,7 +15,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_igf7w")
 
 [node name="Chest" type="VBoxContainer" parent="." unique_id=1238556323]
 layout_mode = 0
@@ -61,6 +62,7 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
+texture = ExtResource("5_xw31r")
 expand_mode = 1
 stretch_mode = 5
 
@@ -1009,3 +1011,34 @@ size_flags_vertical = 3
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="SwiftInfo" type="Control" parent="." unique_id=1574952974]
+z_index = 1
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("7_wpwti")
+metadata/_custom_type_script = "uid://d23wkaooq0n8c"
+
+[node name="PanelContainer" type="PanelContainer" parent="SwiftInfo" unique_id=1500414737]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("7_6umnx")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SwiftInfo/PanelContainer" unique_id=647450917]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Label" type="Label" parent="SwiftInfo/PanelContainer/VBoxContainer" unique_id=460789399]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="SwiftInfo/PanelContainer/VBoxContainer" unique_id=1159475053]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="SwiftInfo/PanelContainer/VBoxContainer" unique_id=1246020903]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_alignment = 1
+
+[connection signal="on_info_changed" from="SwiftInfo" to="SwiftInfo/PanelContainer" method="_on_swift_info_on_info_changed"]

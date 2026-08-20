@@ -4,6 +4,9 @@ class_name SwiftSlot
 extends Panel
 
 
+signal refreshed
+
+
 var swift_inventory: SwiftInventory
 var address: int = -1
 
@@ -43,6 +46,7 @@ func bind(inventory: SwiftInventory, slot_address: int) -> void:
 func refresh() -> void:
 	_refresh_texture()
 	notify_property_list_changed()
+	refreshed.emit()
 
 
 func setup() -> void:
@@ -113,8 +117,9 @@ func _get_preview(item: SwiftItemStack) -> Control:
 	var preview_amount_label: Label = Label.new()
 	
 	preview_texture_rect.texture = item.item_data.icon
-	preview_texture_rect.expand_mode = 1
-	preview_texture_rect.size = item.item_data.icon.get_size()
+	preview_texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	preview_texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	preview_texture_rect.size = size
 	preview_texture_rect.position = -preview_texture_rect.size / 2
 	
 	preview_amount_label.add_theme_font_size_override("font_size", item.item_data.icon.get_size().x / 2)

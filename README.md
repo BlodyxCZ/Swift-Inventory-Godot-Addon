@@ -387,4 +387,10 @@ The inventory continues working with subclasses because stacks reference `SwiftI
 
 If SwiftInv helps your project, consider giving the repository a ⭐.
 
+### Credits
+
+Some icons are based on icons from [@icons — Custom node icons](https://github.com/Voxybuns/at-icons?tab=MIT-1-ov-file)
+by [Voxybuns](https://github.com/Voxybuns), licensed under the MIT License.
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
 </div>

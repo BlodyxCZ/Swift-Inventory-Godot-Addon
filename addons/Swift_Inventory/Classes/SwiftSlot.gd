@@ -15,6 +15,7 @@ var item: SwiftItemStack:
 		if not swift_inventory: return null
 		return swift_inventory.inventory.get(address)
 var texture_rect: TextureRect
+var amount_label: Label
 
 @export var item_data: SwiftItemData:
 	set(value):
@@ -45,26 +46,41 @@ func bind(inventory: SwiftInventory, slot_address: int) -> void:
 
 func refresh() -> void:
 	_refresh_texture()
+	_refresh_label()
 	notify_property_list_changed()
 	refreshed.emit()
 
 
 func setup() -> void:
 	texture_rect = get_node_or_null("SwiftItemIcon") as TextureRect
-	if texture_rect: return
-	texture_rect = TextureRect.new()
-	add_child(texture_rect, true)
-	texture_rect.owner = owner
-	texture_rect.name = "SwiftItemIcon"
-	texture_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	texture_rect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	texture_rect.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	texture_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	if not texture_rect:
+		texture_rect = TextureRect.new()
+		add_child(texture_rect, true)
+		texture_rect.owner = owner
+		texture_rect.name = "SwiftItemIcon"
+		texture_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		texture_rect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		texture_rect.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		texture_rect.set_anchors_preset(Control.PRESET_FULL_RECT, true)
+	
+	amount_label = get_node_or_null("SwiftItemAmount") as Label
+	if not amount_label:
+		amount_label = Label.new()
+		add_child(amount_label, true)
+		amount_label.owner = owner
+		amount_label.name = "SwiftItemAmount"
+		amount_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		amount_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		amount_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		amount_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		amount_label.offset_right = -2.0
+		amount_label.offset_bottom = -2.0
 
-func _refresh_texture():
-	if texture_rect: texture_rect.texture = item_data.icon if item_data else null
+
+func _refresh_texture(): if texture_rect: texture_rect.texture = item_data.icon if item_data else null
+func _refresh_label(): if amount_label: amount_label.text = str(item.amount) if item else ""
 
 
 func _validate_property(property: Dictionary) -> void:
@@ -122,12 +138,16 @@ func _get_preview(item: SwiftItemStack) -> Control:
 	preview_texture_rect.size = size
 	preview_texture_rect.position = -preview_texture_rect.size / 2
 	
-	preview_amount_label.add_theme_font_size_override("font_size", item.item_data.icon.get_size().x / 2)
+	preview_amount_label.add_theme_font_size_override("font_size", size.x / 3)
 	preview_amount_label.text = str(item.amount) if item.amount > 1 else ""
-	preview_amount_label.position = preview_texture_rect.size / 2 * Vector2(1, -1)
+	preview_amount_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	preview_amount_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	preview_amount_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	preview_amount_label.offset_right = -2.0
+	preview_amount_label.offset_bottom = -2.0
 	
 	var preview = Control.new()
 	preview.add_child(preview_texture_rect)
-	preview.add_child(preview_amount_label)
+	preview_texture_rect.add_child(preview_amount_label)
 	
 	return preview

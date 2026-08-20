@@ -9,4 +9,5 @@ id = &"Sword"
 display_name = "Sword"
 description = "It's a sword, BRUH"
 icon = ExtResource("1_0li4k")
+max_stack_size = 5
 metadata/_custom_type_script = "uid://cq5053m8y7vf1"

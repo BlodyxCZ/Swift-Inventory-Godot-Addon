@@ -1,12 +1,34 @@
 [gd_scene format=3 uid="uid://e7w5ci5vbgb2"]
 
 [ext_resource type="Script" uid="uid://dnp6muoj3e72d" path="res://addons/Swift_Inventory/Classes/SwiftGrid.gd" id="1_gswx4"]
+[ext_resource type="Script" uid="uid://8xv7tupboav2" path="res://addons/Swift_Inventory/Classes/SwiftItemStack.gd" id="2_6umnx"]
 [ext_resource type="Script" uid="uid://bt3thfbc2njfp" path="res://addons/Swift_Inventory/Classes/SwiftSlot.gd" id="3_igf7w"]
-[ext_resource type="Resource" uid="uid://dwfa5idqnlndo" path="res://addons/Swift_Inventory/Example/chest_inventory.tres" id="3_xw31r"]
+[ext_resource type="Resource" uid="uid://byb0hj5t6souk" path="res://addons/Swift_Inventory/Example/sword_data.tres" id="3_nih2c"]
+[ext_resource type="Script" uid="uid://ddpogvrv0ol54" path="res://addons/Swift_Inventory/Classes/SwiftInventory.gd" id="4_63s4f"]
 [ext_resource type="Texture2D" uid="uid://u7ypwugovmsk" path="res://icon.svg" id="5_xw31r"]
 [ext_resource type="Resource" uid="uid://dtwuywatdmtxm" path="res://addons/Swift_Inventory/Example/player_inventory.tres" id="6_wpwti"]
 [ext_resource type="Script" uid="uid://bxikxeqm4i4e3" path="res://addons/Swift_Inventory/Example/example_info_panel.gd" id="7_6umnx"]
 [ext_resource type="Script" uid="uid://d23wkaooq0n8c" path="res://addons/Swift_Inventory/Classes/SwiftInfo.gd" id="7_wpwti"]
+
+[sub_resource type="Resource" id="Resource_q6h18"]
+script = ExtResource("2_6umnx")
+item_data = ExtResource("3_nih2c")
+amount = 3
+metadata/_custom_type_script = "uid://8xv7tupboav2"
+
+[sub_resource type="Resource" id="Resource_nih2c"]
+script = ExtResource("2_6umnx")
+item_data = ExtResource("3_nih2c")
+amount = 1
+
+[sub_resource type="Resource" id="Resource_txi3l"]
+script = ExtResource("4_63s4f")
+size = 40
+inventory = Dictionary[int, ExtResource("2_6umnx")]({
+0: SubResource("Resource_q6h18"),
+12: SubResource("Resource_nih2c")
+})
+metadata/_custom_type_script = "uid://ddpogvrv0ol54"
 
 [node name="ExampleScene" type="Control" unique_id=1552255554]
 layout_mode = 3
@@ -44,18 +66,18 @@ grow_vertical = 2
 custom_minimum_size = Vector2(676, 268)
 layout_mode = 2
 script = ExtResource("1_gswx4")
-swift_inventory = ExtResource("3_xw31r")
+swift_inventory = SubResource("Resource_txi3l")
 inventory_size = 40
 slot_size = Vector2i(64, 64)
 metadata/_custom_type_script = "uid://dnp6muoj3e72d"
 
-[node name="Slot_00" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1841786047]
+[node name="Slot_00" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=223960653]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_00" unique_id=963568685]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_00" unique_id=1831530637]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -66,13 +88,23 @@ texture = ExtResource("5_xw31r")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_01" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=444834151]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_00" unique_id=492697941]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+text = "3"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_01" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1103160080]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_01" unique_id=1575029039]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_01" unique_id=932474215]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -82,13 +114,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_02" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=86428655]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_01" unique_id=2036324286]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_02" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1291273390]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_02" unique_id=1342472204]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_02" unique_id=111496275]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -98,13 +137,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_03" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=976040927]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_02" unique_id=528715565]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_03" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1134745428]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_03" unique_id=946341102]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_03" unique_id=2076156494]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -114,13 +160,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_04" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2094295454]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_03" unique_id=1935240611]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_04" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=411882115]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_04" unique_id=1764048083]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_04" unique_id=1100037580]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -130,13 +183,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_05" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1891962156]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_04" unique_id=1291696596]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_05" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1794779183]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_05" unique_id=1644797676]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_05" unique_id=856706103]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -146,13 +206,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_06" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1181830633]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_05" unique_id=377156910]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_06" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2103451189]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_06" unique_id=2018704248]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_06" unique_id=972578018]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -162,13 +229,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_07" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=223442600]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_06" unique_id=1525024822]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_07" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=622153774]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_07" unique_id=2027199986]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_07" unique_id=2087788144]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -178,13 +252,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_08" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1575831530]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_07" unique_id=2111742959]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_08" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1692816074]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_08" unique_id=299789678]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_08" unique_id=951657416]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -194,13 +275,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_09" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1873331058]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_08" unique_id=917710566]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_09" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=10948942]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_09" unique_id=1358361933]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_09" unique_id=164298710]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -210,13 +298,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_10" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1580317950]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_09" unique_id=383943014]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_10" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1774237739]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_10" unique_id=157520930]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_10" unique_id=1612018328]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -226,13 +321,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_11" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2025605292]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_10" unique_id=644677736]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_11" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=662297298]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_11" unique_id=1678638378]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_11" unique_id=1733688900]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -242,13 +344,45 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_12" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=272657913]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_11" unique_id=1772902791]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_12" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=563795735]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_12" unique_id=538755770]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_12" unique_id=588224887]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+texture = ExtResource("5_xw31r")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_12" unique_id=536735427]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "1"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_13" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=384588690]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_13" unique_id=923761864]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -258,13 +392,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_13" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2013656907]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_13" unique_id=1023257825]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_14" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1004735830]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_13" unique_id=2033379713]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_14" unique_id=996447024]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -274,13 +415,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_14" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=627687053]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_14" unique_id=1216926160]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_15" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2007429942]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_14" unique_id=1600384676]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_15" unique_id=545835424]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -290,13 +438,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_15" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=631411487]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_15" unique_id=1626186410]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_16" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=107050964]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_15" unique_id=125063892]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_16" unique_id=1115208848]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -306,13 +461,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_16" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1447963574]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_16" unique_id=708356127]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_17" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1330209884]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_16" unique_id=821625379]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_17" unique_id=1304911402]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -322,13 +484,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_17" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2131476502]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_17" unique_id=1756949553]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_18" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1134213091]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_17" unique_id=1089219928]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_18" unique_id=1953367966]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -338,13 +507,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_18" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1943191292]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_18" unique_id=234212348]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_19" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1975999823]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_18" unique_id=1009100948]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_19" unique_id=908327009]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -354,13 +530,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_19" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=795931234]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_19" unique_id=1677132569]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_20" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=765672480]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_19" unique_id=1295698229]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_20" unique_id=1273223941]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -370,13 +553,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_20" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=11475666]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_20" unique_id=70888478]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_21" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=551493545]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_20" unique_id=788954971]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_21" unique_id=890440066]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -386,13 +576,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_21" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2106235222]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_21" unique_id=1663487138]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_22" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=53764859]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_21" unique_id=1033953537]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_22" unique_id=1174900167]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -402,13 +599,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_22" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1460453784]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_22" unique_id=1858916260]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_23" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1460590281]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_22" unique_id=1063742582]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_23" unique_id=57424074]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -418,13 +622,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_23" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1539091949]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_23" unique_id=2074993116]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_24" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=852892957]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_23" unique_id=2111147434]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_24" unique_id=2145645857]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -434,13 +645,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_24" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=855788216]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_24" unique_id=334162660]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_25" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1040006233]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_24" unique_id=1761495528]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_25" unique_id=2090426339]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -450,13 +668,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_25" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=8969288]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_25" unique_id=736331233]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_26" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=828148202]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_25" unique_id=2062736949]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_26" unique_id=43705187]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -466,13 +691,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_26" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2073978718]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_26" unique_id=900839443]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_27" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1564438482]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_26" unique_id=973717265]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_27" unique_id=1707192339]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -482,13 +714,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_27" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=775582560]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_27" unique_id=962620927]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_28" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1719896972]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_27" unique_id=639978494]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_28" unique_id=453542686]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -498,13 +737,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_28" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2047968285]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_28" unique_id=2021040273]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_29" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1857680927]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_28" unique_id=294200038]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_29" unique_id=2029946015]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -514,13 +760,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_29" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1298219876]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_29" unique_id=408298159]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_30" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=143318701]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_29" unique_id=607112084]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_30" unique_id=847497667]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -530,13 +783,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_30" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=773999507]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_30" unique_id=1792487110]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_31" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=270880439]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_30" unique_id=594926893]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_31" unique_id=1625529243]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -546,13 +806,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_31" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1262587349]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_31" unique_id=1772104076]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_32" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2080331337]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_31" unique_id=1497091683]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_32" unique_id=1612836668]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -562,13 +829,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_32" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1100907941]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_32" unique_id=1383922935]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_33" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=802762767]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_32" unique_id=350326793]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_33" unique_id=22097710]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -578,13 +852,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_33" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=836437009]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_33" unique_id=886223994]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_34" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1144319684]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_33" unique_id=1969317865]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_34" unique_id=554841297]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -594,13 +875,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_34" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2141475233]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_34" unique_id=342935919]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_35" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=348956896]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_34" unique_id=204800795]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_35" unique_id=76293150]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -610,13 +898,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_35" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=329804279]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_35" unique_id=1019189529]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_36" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1987402723]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_35" unique_id=1435708585]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_36" unique_id=1516858150]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -626,13 +921,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_36" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1041903846]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_36" unique_id=745096536]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_37" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2004474353]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_36" unique_id=1534658487]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_37" unique_id=2125050390]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -642,13 +944,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_37" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=338006668]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_37" unique_id=1219021741]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_38" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=776037595]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_37" unique_id=1623396435]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_38" unique_id=364493952]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -658,13 +967,20 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_38" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2044489847]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_38" unique_id=1013056035]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_39" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1078975267]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_38" unique_id=1367901550]
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_39" unique_id=21481926]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -674,21 +990,12 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_39" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=922901982]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-script = ExtResource("3_igf7w")
-
-[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_39" unique_id=543172450]
+[node name="SwiftItemAmount" type="Label" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_39" unique_id=622286368]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="Player" type="VBoxContainer" parent="." unique_id=713867381]
 layout_mode = 0
@@ -724,13 +1031,13 @@ inventory_size = 18
 slot_size = Vector2i(64, 64)
 metadata/_custom_type_script = "uid://dnp6muoj3e72d"
 
-[node name="Slot_00" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=398214849]
+[node name="Slot_00" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1234778469]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_00" unique_id=291729635]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_00" unique_id=1028804881]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -740,13 +1047,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_01" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1692900496]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_00" unique_id=886829808]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_01" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=971725469]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_01" unique_id=1720003741]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_01" unique_id=1583251251]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -756,13 +1072,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_02" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=702027973]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_01" unique_id=1825595451]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_02" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=37192779]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_02" unique_id=738603623]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_02" unique_id=1449215417]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -772,13 +1097,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_03" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=373974628]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_02" unique_id=548444732]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_03" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1990638825]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_03" unique_id=1078819877]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_03" unique_id=302426946]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -788,13 +1122,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_04" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=601271551]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_03" unique_id=766265288]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_04" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=494969043]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_04" unique_id=1107960159]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_04" unique_id=205599912]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -804,13 +1147,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_05" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=975845615]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_04" unique_id=1853536241]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_05" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1175761030]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_05" unique_id=468018729]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_05" unique_id=1711524117]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -820,13 +1172,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_06" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1156619545]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_05" unique_id=429183844]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_06" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=878647877]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_06" unique_id=873287853]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_06" unique_id=1242837066]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -836,13 +1197,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_07" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1065343592]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_06" unique_id=624751931]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_07" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1728139944]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_07" unique_id=335422213]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_07" unique_id=593343950]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -852,13 +1222,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_08" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=126538534]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_07" unique_id=629327589]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_08" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=9418002]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_08" unique_id=523694396]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_08" unique_id=1521026643]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -868,13 +1247,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_09" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=2118309863]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_08" unique_id=593639064]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_09" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1786101644]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_09" unique_id=1585273818]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_09" unique_id=1050622535]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -884,13 +1272,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_10" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=247296695]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_09" unique_id=1945911052]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_10" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=375656183]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_10" unique_id=318126788]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_10" unique_id=1906419806]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -900,13 +1297,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_11" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1521685101]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_10" unique_id=434224879]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_11" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=568735927]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_11" unique_id=1499938097]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_11" unique_id=1231785902]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -916,13 +1322,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_12" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1406331433]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_11" unique_id=425934919]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_12" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=739678920]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_12" unique_id=1855086376]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_12" unique_id=235394108]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -932,13 +1347,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_13" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=6978285]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_12" unique_id=1882010082]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_13" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1585149708]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_13" unique_id=1405524848]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_13" unique_id=1806601127]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -948,13 +1372,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_14" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1451044043]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_13" unique_id=1546956909]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_14" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=645069197]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_14" unique_id=916438750]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_14" unique_id=240916569]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -964,13 +1397,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_15" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1637591801]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_14" unique_id=1073032424]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_15" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=216273861]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_15" unique_id=730281688]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_15" unique_id=257447114]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -980,13 +1422,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_16" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=635440052]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_15" unique_id=1045279112]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_16" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1650224409]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_16" unique_id=1959368385]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_16" unique_id=501468000]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -996,13 +1447,22 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Slot_17" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1816517986]
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_16" unique_id=12448690]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Slot_17" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=2052300542]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_igf7w")
 
-[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_17" unique_id=1376979715]
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_17" unique_id=135033340]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1011,6 +1471,15 @@ size_flags_vertical = 3
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="SwiftItemAmount" type="Label" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_17" unique_id=831213613]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -4.0
+offset_bottom = -2.0
+horizontal_alignment = 2
+vertical_alignment = 2
 
 [node name="SwiftInfo" type="Control" parent="." unique_id=1574952974]
 z_index = 1

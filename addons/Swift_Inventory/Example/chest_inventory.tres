@@ -1,19 +1,9 @@
 [gd_resource type="Resource" script_class="SwiftInventory" format=3 uid="uid://dwfa5idqnlndo"]
 
 [ext_resource type="Script" uid="uid://8xv7tupboav2" path="res://addons/Swift_Inventory/Classes/SwiftItemStack.gd" id="1_rb5lb"]
-[ext_resource type="Resource" uid="uid://byb0hj5t6souk" path="res://addons/Swift_Inventory/Example/sword_data.tres" id="2_byf2y"]
 [ext_resource type="Script" uid="uid://ddpogvrv0ol54" path="res://addons/Swift_Inventory/Classes/SwiftInventory.gd" id="3_wonyc"]
-
-[sub_resource type="Resource" id="Resource_ynixf"]
-script = ExtResource("1_rb5lb")
-item_data = ExtResource("2_byf2y")
-amount = 1
-metadata/_custom_type_script = "uid://8xv7tupboav2"
 
 [resource]
 script = ExtResource("3_wonyc")
 size = 40
-inventory = Dictionary[int, ExtResource("1_rb5lb")]({
-0: SubResource("Resource_ynixf")
-})
 metadata/_custom_type_script = "uid://ddpogvrv0ol54"

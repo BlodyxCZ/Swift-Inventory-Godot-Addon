@@ -1,0 +1,1011 @@
+[gd_scene format=3 uid="uid://e7w5ci5vbgb2"]
+
+[ext_resource type="Script" uid="uid://dnp6muoj3e72d" path="res://addons/Swift_Inventory/Classes/SwiftGrid.gd" id="1_gswx4"]
+[ext_resource type="Script" uid="uid://bhlr7fytm8cgs" path="res://addons/Swift_Inventory/Example/example_scene.gd" id="1_igf7w"]
+[ext_resource type="Script" uid="uid://bt3thfbc2njfp" path="res://addons/Swift_Inventory/Classes/SwiftSlot.gd" id="3_igf7w"]
+[ext_resource type="Resource" uid="uid://dwfa5idqnlndo" path="res://addons/Swift_Inventory/Example/chest_inventory.tres" id="3_xw31r"]
+[ext_resource type="Resource" uid="uid://dtwuywatdmtxm" path="res://addons/Swift_Inventory/Example/player_inventory.tres" id="6_wpwti"]
+
+[node name="ExampleScene" type="Control" unique_id=1552255554]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_igf7w")
+
+[node name="Chest" type="VBoxContainer" parent="." unique_id=1238556323]
+layout_mode = 0
+offset_left = 227.0
+offset_top = 23.0
+offset_right = 923.0
+offset_bottom = 338.0
+
+[node name="Label" type="Label" parent="Chest" unique_id=575767647]
+layout_mode = 2
+text = "Chest Inventory"
+horizontal_alignment = 1
+
+[node name="Panel" type="Panel" parent="Chest" unique_id=1445421544]
+custom_minimum_size = Vector2(696, 288)
+layout_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="Chest/Panel" unique_id=2034653656]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Chest_SwiftGrid" type="Container" parent="Chest/Panel/CenterContainer" unique_id=95560836]
+custom_minimum_size = Vector2(676, 268)
+layout_mode = 2
+script = ExtResource("1_gswx4")
+swift_inventory = ExtResource("3_xw31r")
+inventory_size = 40
+slot_size = Vector2i(64, 64)
+metadata/_custom_type_script = "uid://dnp6muoj3e72d"
+
+[node name="Slot_00" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1841786047]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_00" unique_id=963568685]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_01" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=444834151]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_01" unique_id=1575029039]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_02" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=86428655]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_02" unique_id=1342472204]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_03" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=976040927]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_03" unique_id=946341102]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_04" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2094295454]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_04" unique_id=1764048083]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_05" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1891962156]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_05" unique_id=1644797676]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_06" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1181830633]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_06" unique_id=2018704248]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_07" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=223442600]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_07" unique_id=2027199986]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_08" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1575831530]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_08" unique_id=299789678]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_09" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1873331058]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_09" unique_id=1358361933]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_10" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1580317950]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_10" unique_id=157520930]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_11" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2025605292]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_11" unique_id=1678638378]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_12" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=272657913]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_12" unique_id=538755770]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_13" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2013656907]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_13" unique_id=2033379713]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_14" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=627687053]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_14" unique_id=1600384676]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_15" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=631411487]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_15" unique_id=125063892]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_16" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1447963574]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_16" unique_id=821625379]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_17" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2131476502]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_17" unique_id=1089219928]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_18" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1943191292]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_18" unique_id=1009100948]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_19" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=795931234]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_19" unique_id=1295698229]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_20" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=11475666]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_20" unique_id=788954971]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_21" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2106235222]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_21" unique_id=1033953537]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_22" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1460453784]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_22" unique_id=1063742582]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_23" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1539091949]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_23" unique_id=2111147434]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_24" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=855788216]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_24" unique_id=1761495528]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_25" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=8969288]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_25" unique_id=2062736949]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_26" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2073978718]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_26" unique_id=973717265]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_27" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=775582560]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_27" unique_id=639978494]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_28" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2047968285]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_28" unique_id=294200038]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_29" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1298219876]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_29" unique_id=607112084]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_30" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=773999507]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_30" unique_id=594926893]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_31" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1262587349]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_31" unique_id=1497091683]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_32" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1100907941]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_32" unique_id=350326793]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_33" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=836437009]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_33" unique_id=1969317865]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_34" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2141475233]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_34" unique_id=204800795]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_35" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=329804279]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_35" unique_id=1435708585]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_36" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=1041903846]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_36" unique_id=1534658487]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_37" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=338006668]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_37" unique_id=1623396435]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_38" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=2044489847]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_38" unique_id=1367901550]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_39" type="Panel" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid" unique_id=922901982]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Chest/Panel/CenterContainer/Chest_SwiftGrid/Slot_39" unique_id=543172450]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Player" type="VBoxContainer" parent="." unique_id=713867381]
+layout_mode = 0
+offset_left = 363.0
+offset_top = 359.0
+offset_right = 787.0
+offset_bottom = 606.0
+
+[node name="Label" type="Label" parent="Player" unique_id=529326589]
+layout_mode = 2
+text = "Player Inventory"
+horizontal_alignment = 1
+
+[node name="Panel" type="Panel" parent="Player" unique_id=1035237723]
+custom_minimum_size = Vector2(424, 220)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CenterContainer" type="CenterContainer" parent="Player/Panel" unique_id=1996702885]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Player_SwiftGrid" type="Container" parent="Player/Panel/CenterContainer" unique_id=419556035]
+custom_minimum_size = Vector2(404, 200)
+layout_mode = 2
+script = ExtResource("1_gswx4")
+swift_inventory = ExtResource("6_wpwti")
+inventory_size = 18
+slot_size = Vector2i(64, 64)
+metadata/_custom_type_script = "uid://dnp6muoj3e72d"
+
+[node name="Slot_00" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=398214849]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_00" unique_id=291729635]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_01" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1692900496]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_01" unique_id=1720003741]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_02" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=702027973]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_02" unique_id=738603623]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_03" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=373974628]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_03" unique_id=1078819877]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_04" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=601271551]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_04" unique_id=1107960159]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_05" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=975845615]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_05" unique_id=468018729]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_06" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1156619545]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_06" unique_id=873287853]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_07" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1065343592]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_07" unique_id=335422213]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_08" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=126538534]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_08" unique_id=523694396]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_09" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=2118309863]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_09" unique_id=1585273818]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_10" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=247296695]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_10" unique_id=318126788]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_11" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1521685101]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_11" unique_id=1499938097]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_12" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1406331433]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_12" unique_id=1855086376]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_13" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=6978285]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_13" unique_id=1405524848]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_14" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1451044043]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_14" unique_id=916438750]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_15" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1637591801]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_15" unique_id=730281688]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_16" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=635440052]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_16" unique_id=1959368385]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot_17" type="Panel" parent="Player/Panel/CenterContainer/Player_SwiftGrid" unique_id=1816517986]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_igf7w")
+
+[node name="SwiftItemIcon" type="TextureRect" parent="Player/Panel/CenterContainer/Player_SwiftGrid/Slot_17" unique_id=1376979715]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5

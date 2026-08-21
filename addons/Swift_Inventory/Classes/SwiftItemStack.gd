@@ -3,7 +3,6 @@
 class_name SwiftItemStack
 extends Resource
 
-
 @export var item_data: SwiftItemData
 @export var amount: int
 
@@ -13,4 +12,5 @@ func _init(_item_data: SwiftItemData = null, _amount: int = 0) -> void:
 	amount = _amount
 
 
-func get_reserve() -> int: return item_data.max_stack_size - amount
+func get_reserve() -> int:
+	return item_data.max_stack_size - amount

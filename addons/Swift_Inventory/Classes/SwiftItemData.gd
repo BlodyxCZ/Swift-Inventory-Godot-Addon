@@ -3,7 +3,6 @@
 class_name SwiftItemData
 extends Resource
 
-
 @export var id: StringName = "NewItem"
 @export var display_name: String = "NewItem"
 @export var description: String = "NewDescription"

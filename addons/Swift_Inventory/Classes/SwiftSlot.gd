@@ -3,34 +3,38 @@
 class_name SwiftSlot
 extends Panel
 
-
 signal refreshed
 
+@export var item_data: SwiftItemData:
+	set(value):
+		if not Engine.is_editor_hint():
+			return
+		if not swift_inventory:
+			return
+		var current_amount := item.amount if item else 1
+		swift_inventory.set_stack(address, value, current_amount)
+	get:
+		return item.item_data if item else null
+@export var amount: int:
+	set(value):
+		if not Engine.is_editor_hint():
+			return
+		if not swift_inventory or not item:
+			return
+		swift_inventory.set_stack(address, item.item_data, value)
+	get:
+		return item.amount if item else 0
 
 var swift_inventory: SwiftInventory
 var address: int = -1
 
 var item: SwiftItemStack:
 	get:
-		if not swift_inventory: return null
+		if not swift_inventory:
+			return null
 		return swift_inventory.inventory.get(address)
 var texture_rect: TextureRect
 var amount_label: Label
-
-@export var item_data: SwiftItemData:
-	set(value):
-		if not Engine.is_editor_hint(): return
-		if not swift_inventory: return
-		var current_amount := item.amount if item else 1
-		swift_inventory.set_stack(address, value, current_amount)
-	get: return item.item_data if item else null
-@export var amount: int:
-	set(value):
-		if not Engine.is_editor_hint():return
-		if not swift_inventory or not item: return
-		swift_inventory.set_stack(address, item.item_data, value)
-	get: return item.amount if item else 0
-@export_tool_button("Refresh Texture", "Reload") var refresh_texture_button = _refresh_texture
 
 
 func _init() -> void:
@@ -52,24 +56,24 @@ func refresh() -> void:
 
 
 func setup() -> void:
+	add_to_group("_swift_editor_selectable")
+
 	texture_rect = get_node_or_null("SwiftItemIcon") as TextureRect
 	if not texture_rect:
 		texture_rect = TextureRect.new()
-		add_child(texture_rect, true)
-		texture_rect.owner = owner
+		add_child(texture_rect)
 		texture_rect.name = "SwiftItemIcon"
 		texture_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		texture_rect.set_anchors_preset(Control.PRESET_FULL_RECT, true)
 		texture_rect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		texture_rect.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		texture_rect.set_anchors_preset(Control.PRESET_FULL_RECT, true)
-	
+
 	amount_label = get_node_or_null("SwiftItemAmount") as Label
 	if not amount_label:
 		amount_label = Label.new()
-		add_child(amount_label, true)
-		amount_label.owner = owner
+		add_child(amount_label)
 		amount_label.name = "SwiftItemAmount"
 		amount_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		amount_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -79,8 +83,14 @@ func setup() -> void:
 		amount_label.offset_bottom = -2.0
 
 
-func _refresh_texture(): if texture_rect: texture_rect.texture = item_data.icon if item_data else null
-func _refresh_label(): if amount_label: amount_label.text = str(item.amount) if item else ""
+func _refresh_texture() -> void:
+	if texture_rect:
+		texture_rect.texture = item_data.icon if item_data else null
+
+
+func _refresh_label() -> void:
+	if amount_label:
+		amount_label.text = str(item.amount) if item else ""
 
 
 func _validate_property(property: Dictionary) -> void:
@@ -90,8 +100,9 @@ func _validate_property(property: Dictionary) -> void:
 		property.usage &= ~PROPERTY_USAGE_EDITOR
 
 
-func _get_drag_data(at_position: Vector2) -> Variant:
-	if not item or not swift_inventory: return null
+func _get_drag_data(_at_position: Vector2) -> Variant:
+	if not item or not swift_inventory:
+		return null
 	set_drag_preview(_get_preview(item))
 	return {
 		"inventory": swift_inventory,
@@ -99,7 +110,11 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 		"quantity": item.amount,
 	}
 
-func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
+
+func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
+	if Engine.is_editor_hint():
+		return data is Dictionary and data.has("files")
+
 	return (
 		data is Dictionary
 		and data.get("inventory") is SwiftInventory
@@ -107,37 +122,45 @@ func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 		and data.has("quantity")
 	)
 
-func _drop_data(at_position: Vector2, data: Variant) -> void:
+
+func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	var from_inventory := data["inventory"] as SwiftInventory
 	var from_address: int = data["address"]
 	var quantity: int = data["quantity"]
-	
-	if from_inventory == swift_inventory and from_address == address: return
-	
+
+	if from_inventory == swift_inventory and from_address == address:
+		return
+
 	var from_stack: SwiftItemStack = from_inventory.inventory.get(from_address)
 	var to_stack: SwiftItemStack = swift_inventory.inventory.get(address)
-	if not from_stack: return
-	
+	if not from_stack:
+		return
+
 	# Different items -> swap.
 	if to_stack and from_stack.item_data.id != to_stack.item_data.id:
-		if from_inventory == swift_inventory: from_inventory.try_swap(from_address, address)
-		else: from_inventory.try_swap(from_address, address, swift_inventory)
+		if from_inventory == swift_inventory:
+			from_inventory.try_swap(from_address, address)
+		else:
+			from_inventory.try_swap(from_address, address, swift_inventory)
 		return
-	
+
 	# Empty slot / same item -> move or stack.
-	if from_inventory == swift_inventory: from_inventory.try_move(from_address, address, quantity)
-	else: from_inventory.try_transfer(from_address, swift_inventory, address, quantity)
+	if from_inventory == swift_inventory:
+		from_inventory.try_move(from_address, address, quantity)
+	else:
+		from_inventory.try_transfer(from_address, swift_inventory, address, quantity)
+
 
 func _get_preview(item: SwiftItemStack) -> Control:
 	var preview_texture_rect: TextureRect = TextureRect.new()
 	var preview_amount_label: Label = Label.new()
-	
+
 	preview_texture_rect.texture = item.item_data.icon
 	preview_texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	preview_texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	preview_texture_rect.size = size
 	preview_texture_rect.position = -preview_texture_rect.size / 2
-	
+
 	preview_amount_label.add_theme_font_size_override("font_size", size.x / 3)
 	preview_amount_label.text = str(item.amount) if item.amount > 1 else ""
 	preview_amount_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -145,9 +168,9 @@ func _get_preview(item: SwiftItemStack) -> Control:
 	preview_amount_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	preview_amount_label.offset_right = -2.0
 	preview_amount_label.offset_bottom = -2.0
-	
+
 	var preview = Control.new()
 	preview.add_child(preview_texture_rect)
 	preview_texture_rect.add_child(preview_amount_label)
-	
+
 	return preview

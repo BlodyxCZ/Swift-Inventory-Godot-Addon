@@ -1,82 +1,99 @@
 <div align="center">
 
-<img src="addons/Swift_Inventory/Icons/SwiftGrid.svg" alt="SwiftInv" width="112">
+<img src="Icons/SwiftGrid.svg" alt="Swift Inventory" width="112">
 
-# SwiftInv
+# Swift Inventory
 
 ### A small, data-driven inventory system for Godot 4
 
 Build inventories with unmatched speed.
 
-[![Godot Engine](https://img.shields.io/badge/Godot-4.x-478CBF?logo=godot-engine&logoColor=white)](https://godotengine.org/)
+[![Godot Engine](https://img.shields.io/badge/Godot-4.4%2B-478CBF?logo=godot-engine&logoColor=white)](https://godotengine.org/)
 [![Language](https://img.shields.io/badge/Language-GDScript-478CBF?logo=godot-engine&logoColor=white)](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/)
+[![Version](https://img.shields.io/badge/Version-2.0.0-6C63FF)](addons/Swift_Inventory/plugin.cfg)
 ![Status](https://img.shields.io/badge/Status-In%20Development-orange)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
+[Godot Asset Store](https://store.godotengine.org/asset/blodyx/swift-inventory/) · [GitHub](https://github.com/BlodyxCZ/Swift-Inventory-Godot-Addon) · [Included Example](addons/Swift_Inventory/Example/example_scene.tscn)
 
 </div>
 
----
+## ⛑️ Development Status
+
+Swift Inventory is actively being developed. The core inventory resources, grid UI, slots, stacking, transfers, runtime drag and drop, and editor workflow are available now.
+
+The following parts are not yet complete:
+
+- `SwiftDropArea` is a work in progress and does not provide drop-area behavior yet.
+- `SwiftInfo` has a known issue where the information panel can hide after a dragged item is dropped.
+
+If you encounter another problem, [open a GitHub issue](https://github.com/BlodyxCZ/Swift-Inventory-Godot-Addon/issues).
 
 ## ✨ Features
 
-- **Resource-based inventory data** — inventories and item definitions are independent from the UI.
-- **Automatic stacking** — fills compatible stacks before occupying empty slots.
-- **Stack limits** — every item defines its own `max_stack_size`.
-- **Move, swap & transfer** — manipulate stacks inside one inventory or between multiple inventories.
-- **Partial stack movement** — move only as much as the destination can accept.
+- **Resource-based data** — inventory state and item definitions are independent from the UI.
+- **Automatic stacking** — compatible stacks are filled before empty slots are used.
+- **Per-item stack limits** — every item defines its own `max_stack_size`.
+- **Move, split, swap, and transfer operations** — manipulate stacks within one inventory or between inventories.
 - **Automatic grid synchronization** — `SwiftGrid` creates and binds slots to match inventory size.
-- **Drag & drop** — `SwiftSlot` provides built-in inventory drag/drop behavior.
-- **Editor-friendly workflow** — create item resources and populate slots directly from the Inspector.
-- **Change notifications** — react to inventory mutations through a single typed signal.
-- **Extensible item info UI** — subclass `SwiftInfo` to build your own tooltip or hover panel.
-- **Lightweight architecture** — no required singleton and no inventory logic coupled to a specific game.
+- **Runtime drag and drop** — `SwiftSlot` can move, merge, swap, or transfer stacks.
+- **Editor tooling** — select generated slots and drop `SwiftItemData` resources onto them in the 2D editor.
+- **Change notifications** — react to inventory mutations through one typed signal.
+- **Extensible item information UI** — subclass `SwiftInfo` to create a custom tooltip or hover panel.
+- **Included example** — inspect or run a ready-made player-and-chest inventory scene.
+- **Lightweight integration** — no singleton is required, and the inventory logic is not tied to a particular game.
 
 > [!TIP]
-> `SwiftInventory` owns the data. `SwiftGrid` and `SwiftSlot` only represent it.  
-> That separation makes the same inventory usable by different UIs or gameplay systems.
-
----
+> `SwiftInventory` owns the data. `SwiftGrid` and `SwiftSlot` present and interact with that data. This separation lets multiple gameplay systems or interfaces use the same inventory resource.
 
 ## 🧩 Architecture
 
-| Class | Responsibility |
-| --- | --- |
-| `SwiftItemData` | Static item definition: ID, name, description, icon, tags and stack size |
-| `SwiftItemStack` | An item definition plus its current amount |
-| `SwiftInventory` | Inventory state and all inventory operations |
-| `SwiftGrid` | Automatically creates, binds and lays out inventory slots |
-| `SwiftSlot` | Displays one inventory address and handles drag/drop |
-| `SwiftInfo` | Base control for custom hover information |
+| Class | Base type | Responsibility |
+| --- | --- | --- |
+| `SwiftItemData` | `Resource` | Static item definition: ID, name, description, icon, tags, and stack limit |
+| `SwiftItemStack` | `Resource` | An item definition plus its current amount |
+| `SwiftInventory` | `Resource` | Inventory size, stack state, operations, and change notifications |
+| `SwiftGrid` | `Container` | Creates, binds, sizes, and lays out inventory slots |
+| `SwiftSlot` | `Panel` | Displays one inventory address and handles drag and drop |
+| `SwiftInfo` | `Control` | Base control for a custom item hover panel |
+| `SwiftDropArea` | `Control` | Reserved for drop-area behavior; currently WIP |
+| `Swift_Inventory.gd` | `EditorPlugin` | Adds slot selection and item-resource dropping to the 2D editor |
 
----
+## 🗃️ Installation
 
-## 📦 Installation
+### Godot Asset Store
 
-Copy the addon into your Godot project so the structure looks like:
+1. Open the [Swift Inventory store page](https://store.godotengine.org/asset/blodyx/swift-inventory/).
+2. Add the asset to your library and download it.
+3. Install the `addons/Swift_Inventory` folder into your project.
+
+### GitHub
+
+1. Download the repository from [GitHub](https://github.com/BlodyxCZ/Swift-Inventory-Godot-Addon). (Code > Download .ZIP)
+2. Copy `addons/Swift_Inventory` into your project's `addons` folder.
+
+Your project should contain:
 
 ```text
 res://
 └── addons/
     └── Swift_Inventory/
-        ├── SwiftInventory.gd
-        ├── SwiftItemData.gd
-        ├── SwiftItemStack.gd
-        ├── SwiftGrid.gd
-        ├── SwiftSlot.gd
-        ├── SwiftInfo.gd
-        └── Icons/
+        ├── Classes/
+        ├── Example/
+        ├── Icons/
+        ├── Swift_Inventory.gd
+        └── plugin.cfg
 ```
 
-Because the scripts use `class_name`, the SwiftInv classes become available directly in GDScript once Godot imports them.
+Open **Project > Project Settings > Plugins** and enable **Swift Inventory** to use its editor enhancements.
 
----
+The scripts use `class_name`, so their types become available directly in GDScript after Godot imports the add-on. The runtime inventory API does not require an autoload.
 
-## 🚀 Quick Start
+## ⏱️ Quick Start
 
-### 1. Create an item
+### 1. Create an item definition
 
-Create a new `SwiftItemData` resource and configure it in the Inspector.
-
-For example:
+In the FileSystem dock, create a `SwiftItemData` resource and save it as a `.tres` file. Configure it in the Inspector:
 
 ```text
 id              = "health_potion"
@@ -87,46 +104,58 @@ max_stack_size  = 10
 tags            = ["consumable", "potion"]
 ```
 
-A single `SwiftItemData` resource can be reused by every stack of that item.
+The same `SwiftItemData` resource can be reused by every stack of that item.
 
 ### 2. Create an inventory
 
-Create a `SwiftInventory` resource and give it a size.
+Create a `SwiftInventory` resource, save it as a `.tres` file, and set its size. You can also assign it to a script and populate it at runtime:
 
 ```gdscript
 @export var inventory: SwiftInventory
 @export var health_potion: SwiftItemData
 
+
 func _ready() -> void:
     inventory.size = 24
 
     var remaining := inventory.try_add(health_potion, 5)
-
     if remaining > 0:
         print("Inventory could not fit %d potions." % remaining)
 ```
 
-`try_add()` returns the quantity that **could not** be inserted, making overflow easy to handle.
+`try_add()` returns the quantity that could not be inserted, which makes overflow explicit.
 
 ### 3. Display it with `SwiftGrid`
 
-Add a `SwiftGrid` node and assign your `SwiftInventory` resource to its `swift_inventory` property.
+1. Add a `SwiftGrid` node to a `Control`-based scene.
+2. Assign the `SwiftInventory` resource to `swift_inventory`.
+3. Set `inventory_size`, `slot_size`, and `separation` in the Inspector.
+4. Give the grid enough width for the number of columns you want. Slots wrap to the next row based on the available width.
 
-Then configure:
+`SwiftGrid` creates the required `SwiftSlot` children and keeps them bound to their matching inventory addresses. Changing the inventory size automatically resynchronizes the grid.
+
+### 4. Try the included example
+
+Open and run:
 
 ```text
-Inventory Size  24
-Slot Size       48 × 48
-Separation       6 × 6
+res://addons/Swift_Inventory/Example/example_scene.tscn
 ```
 
-The grid automatically creates the required `SwiftSlot` children and keeps them bound to their matching inventory addresses.
+The scene demonstrates two inventories, item resources, stack amounts, runtime drag and drop, and a `SwiftInfo` panel.
 
-Changing the inventory size updates the grid automatically.
+## 🔀 Editor Workflow
 
----
+With the plugin enabled:
 
-## 🎒 Working With Items
+1. Select a configured `SwiftGrid` in the 2D editor.
+2. Click one of its generated slots. First click always selects the whole `SwiftGrid` node. Second click with `SwiftGrid` node selected, will inspect the clicked `SwiftSlot`.
+3. Drag a `.tres` file containing `SwiftItemData` from the FileSystem dock onto a visible slot. (Cursor will say you are not allowed to drop data, but it works regardless. Will be fixed in the future)
+4. Select the slot to adjust its item or amount in the Inspector.
+
+These edits update the assigned `SwiftInventory` resource. Only `.tres` resources containing `SwiftItemData` are accepted by the editor drop workflow.
+
+## 🛠️ Working With Items
 
 ### Add items
 
@@ -137,7 +166,7 @@ if remaining > 0:
     print("%d items did not fit." % remaining)
 ```
 
-SwiftInv first fills existing compatible stacks, then creates new stacks in empty addresses.
+Existing compatible stacks are filled first. New stacks are then placed in empty addresses until the quantity is exhausted or every address is occupied.
 
 ### Remove items
 
@@ -148,19 +177,19 @@ if result != OK:
     print("Could not remove the requested items.")
 ```
 
-### Move or stack items
+`try_remove()` succeeds only when the address is valid, contains a stack, and holds the full requested quantity.
+
+### Move or merge stacks
 
 ```gdscript
 var remaining := inventory.try_move(
-    0, # from address
-    5, # to address
+    0, # source address
+    5, # destination address
     3  # quantity
 )
 ```
 
-If the destination is empty, the stack is moved or split.
-
-If it contains the same item, SwiftInv fills the destination up to its stack limit.
+An empty destination receives the stack or a split stack. A destination containing the same item is filled up to its stack limit. Different item types are not moved by this method.
 
 ### Swap stacks
 
@@ -168,7 +197,7 @@ If it contains the same item, SwiftInv fills the destination up to its stack lim
 var result := inventory.try_swap(0, 4)
 ```
 
-You can also swap between two inventories:
+Both addresses must contain an item. To swap occupied addresses between inventories:
 
 ```gdscript
 var result := inventory_a.try_swap(
@@ -195,29 +224,23 @@ To transfer as much of an entire inventory as possible:
 var result := inventory_a.transfer_to(inventory_b)
 ```
 
-`transfer_to()` returns `OK` only when the source inventory was completely transferred.
+`transfer_to()` returns `OK` only when the source inventory becomes empty. It returns `FAILED` if any items remain.
 
-### Set a slot directly
-
-```gdscript
-inventory.set_stack(4, item_data, 3)
-```
-
-Clear it by passing `null`:
+### Set or clear an address
 
 ```gdscript
-inventory.set_stack(4, null)
+inventory.set_stack(4, item_data, 3)    # address, SwiftItemData, amount 
 ```
 
-This is also the operation used by editor-facing slot properties.
+The quantity is clamped to the item's `max_stack_size`. Clear the address by passing `null` or a non-positive quantity:
 
----
+```gdscript
+inventory.set_stack(4, null)            # address, SwiftItemData
+```
 
-## 🖱️ Drag & Drop
+## 🫳 Runtime Drag and Drop
 
-`SwiftSlot` implements Godot's built-in drag/drop callbacks.
-
-Dragging a stack carries:
+`SwiftSlot` implements Godot's built-in drag-and-drop callbacks. A dragged stack uses this payload:
 
 ```gdscript
 {
@@ -227,16 +250,14 @@ Dragging a stack carries:
 }
 ```
 
-Dropping onto another slot can:
+Dropping onto another `SwiftSlot` can:
 
-- move a stack,
+- move a stack into an empty address,
 - merge matching stacks,
-- swap different items,
+- swap different occupied stacks,
 - transfer items between inventories.
 
-That means custom UI can participate in SwiftInv's drag/drop system by using the same payload shape.
-
----
+Custom UI can participate in the same workflow by producing or accepting the same payload shape.
 
 ## 📡 Reacting to Inventory Changes
 
@@ -250,7 +271,7 @@ signal on_change(
 )
 ```
 
-Connect once and react only to the mutations your UI or game system cares about:
+Connect once and react to the changes relevant to your game or UI:
 
 ```gdscript
 func _ready() -> void:
@@ -264,28 +285,24 @@ func _on_inventory_changed(
 ) -> void:
     match type:
         SwiftInventory.CHANGES.add:
-            print("Added item at ", to_address)
-
+            print("Added an item at ", to_address)
         SwiftInventory.CHANGES.remove:
-            print("Removed item from ", from_address)
-
+            print("Removed an item from ", from_address)
         SwiftInventory.CHANGES.move:
             print("Moved ", from_address, " -> ", to_address)
-
         SwiftInventory.CHANGES.swap:
             print("Swapped ", from_address, " <-> ", to_address)
-
         SwiftInventory.CHANGES.transfer:
-            print("Inventory transfer changed an address")
-
+            print("An inventory transfer changed an address")
         SwiftInventory.CHANGES.set:
-            print("Set stack at ", to_address)
-
+            print("Set the stack at ", to_address)
         SwiftInventory.CHANGES.size:
             print("Inventory size changed")
+        SwiftInventory.CHANGES.inventory:
+            print("The inventory dictionary was replaced")
 ```
 
-Available change types:
+The available change types are:
 
 ```gdscript
 enum CHANGES {
@@ -295,29 +312,30 @@ enum CHANGES {
     swap,
     transfer,
     set,
-    size
+    size,
+    inventory,
 }
 ```
 
----
+An unused address is reported as `-1`. For example, an add event has no source address, while each side of a cross-inventory transfer receives its own event.
 
-## 🏷️ Item Data
+## 🪄 Extending Item Data
 
-`SwiftItemData` intentionally stays simple:
+`SwiftItemData` intentionally contains only common item metadata:
 
 ```gdscript
 class_name SwiftItemData
 extends Resource
 
-@export var id: StringName
-@export var display_name: String
-@export var description: String
+@export var id: StringName = "NewItem"
+@export var display_name: String = "NewItem"
+@export var description: String = "NewDescription"
 @export var icon: Texture2D
 @export var max_stack_size: int = 1
 @export var tags: Array[StringName] = []
 ```
 
-Extend it when your game needs more metadata:
+Extend it when your game needs additional fields:
 
 ```gdscript
 class_name EquipmentData
@@ -328,9 +346,13 @@ extends SwiftItemData
 @export var equipment_slot: StringName
 ```
 
-The inventory continues working with subclasses because stacks reference `SwiftItemData`.
+Stacks continue to accept subclasses because they reference the `SwiftItemData` base type.
 
----
+## 📰 Custom Item Information
+
+Subclass `SwiftInfo` and connect its `on_info_changed(new_item: SwiftItemStack)` signal to update your own labels, icons, or statistics. The control follows the pointer and displays information for the currently hovered `SwiftSlot`.
+
+The pointer offset property is currently named `position_offest` in the API. See the included `example_info_panel.gd` for a minimal signal handler.
 
 ## 🔧 API Reference
 
@@ -341,43 +363,69 @@ The inventory continues working with subclasses because stacks reference `SwiftI
 
 | API | Returns | Description |
 | --- | --- | --- |
-| `try_add(data, quantity)` | `int` | Adds as much as possible and returns the remaining quantity |
-| `try_remove(address, quantity)` | `Error` | Removes an exact quantity from a stack |
-| `try_move(from, to, quantity)` | `int` | Moves/stacks items and returns the remaining quantity |
+| `try_add(data, quantity)` | `int` | Adds as much as possible and returns the quantity that did not fit |
+| `try_remove(address, quantity)` | `Error` | Removes an exact quantity from one occupied address |
+| `try_move(from, to, quantity)` | `int` | Moves or merges a stack and returns the remaining movable quantity |
 | `try_swap(first, second, other_inventory = null)` | `Error` | Swaps two occupied addresses |
-| `try_transfer(from, other_inventory, to, quantity)` | `int` | Transfers items and returns the remaining quantity |
-| `transfer_to(other_inventory)` | `Error` | Attempts to transfer the entire inventory |
+| `try_transfer(from, other_inventory, to, quantity)` | `int` | Transfers items and returns the remaining transferable quantity |
+| `transfer_to(other_inventory)` | `Error` | Moves as much of this inventory as possible into another inventory |
 | `set_stack(address, data, quantity = 1)` | `Error` | Replaces or clears one address |
-| `is_full()` | `bool` | Returns whether no empty address remains |
+| `is_full()` | `bool` | Returns whether every address is occupied |
+| `size` | `int` | Number of valid inventory addresses |
+| `inventory` | `Dictionary[int, SwiftItemStack]` | Address-to-stack mapping |
+| `on_change` | `Signal` | Reports successful mutations and property changes |
 
 </details>
 
 <details>
-<summary><strong>SwiftItemStack</strong></summary>
+<summary><strong>SwiftItemData and SwiftItemStack</strong></summary>
 
 <br>
 
-| API | Returns | Description |
+| Type | API | Description |
 | --- | --- | --- |
-| `item_data` | `SwiftItemData` | Item represented by the stack |
-| `amount` | `int` | Current stack quantity |
-| `get_reserve()` | `int` | Remaining space before reaching the stack limit |
+| `SwiftItemData` | `id` | Identifier used to decide whether stacks contain the same item type |
+| `SwiftItemData` | `display_name` | User-facing item name |
+| `SwiftItemData` | `description` | User-facing item description |
+| `SwiftItemData` | `icon` | Texture displayed by `SwiftSlot` |
+| `SwiftItemData` | `max_stack_size` | Maximum quantity accepted by a stack |
+| `SwiftItemData` | `tags` | Game-defined item categories |
+| `SwiftItemStack` | `item_data` | Item definition represented by the stack |
+| `SwiftItemStack` | `amount` | Current stack quantity |
+| `SwiftItemStack` | `get_reserve()` | Remaining room before reaching the stack limit |
 
 </details>
 
 <details>
-<summary><strong>SwiftGrid</strong></summary>
+<summary><strong>SwiftGrid, SwiftSlot, and SwiftInfo</strong></summary>
 
 <br>
 
-| Property | Description |
-| --- | --- |
-| `swift_inventory` | Inventory represented by the grid |
-| `inventory_size` | Proxy for `swift_inventory.size` |
-| `slot_size` | Pixel size of generated slots |
-| `separation` | Horizontal and vertical spacing between slots |
+| Type | API | Description |
+| --- | --- | --- |
+| `SwiftGrid` | `swift_inventory` | Inventory represented by the grid |
+| `SwiftGrid` | `inventory_size` | Proxy for `swift_inventory.size` |
+| `SwiftGrid` | `slot_size` | Pixel size of generated slots |
+| `SwiftGrid` | `separation` | Horizontal and vertical space between slots |
+| `SwiftSlot` | `item_data` | Editor-facing item definition for this address |
+| `SwiftSlot` | `amount` | Editor-facing amount for this address |
+| `SwiftSlot` | `swift_inventory` | Inventory to which the slot is bound |
+| `SwiftSlot` | `address` | Address represented by the slot |
+| `SwiftSlot` | `refreshed` | Signal emitted after the slot refreshes its presentation |
+| `SwiftInfo` | `position_offest` | Offset applied to the pointer-following information control |
+| `SwiftInfo` | `on_info_changed` | Signal emitted when the hovered item changes |
 
 </details>
+
+## 🫶 Support
+
+Support me and this project on [![Ko-fi](https://img.shields.io/badge/Ko--fi-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/blodyx).
+
+## ⚖️ License and Credits
+
+Swift Inventory is available under the [MIT License](LICENSE).
+
+Some icons are based on [@icons — Custom node icons](https://github.com/Voxybuns/at-icons?tab=MIT-1-ov-file) by [Voxybuns](https://github.com/Voxybuns), also licensed under the MIT License. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details.
 
 ---
 
@@ -385,12 +433,6 @@ The inventory continues working with subclasses because stacks reference `SwiftI
 
 ### Built for Godot. Kept swift.
 
-If SwiftInv helps your project, consider giving the repository a ⭐.
-
-### Credits
-
-Some icons are based on icons from [@icons — Custom node icons](https://github.com/Voxybuns/at-icons?tab=MIT-1-ov-file)
-by [Voxybuns](https://github.com/Voxybuns), licensed under the MIT License.
-See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+If Swift Inventory helps your project, consider leaving a review on the Godot Asset Store or starring the repository on GitHub.
 
 </div>

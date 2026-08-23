@@ -1,21 +1,43 @@
 @tool
 @icon("res://addons/Swift_Inventory/Icons/SwiftInventory.svg")
+## Address-based inventory resource containing item stacks.
+##
+## Stores [SwiftItemStack] resources at integer addresses from [code]0[/code] through
+## [member size] [code]- 1[/code]. High-level operations move, merge, and transfer stacks while
+## emitting [signal on_change] so bound controls can refresh themselves.
 class_name SwiftInventory
 extends Resource
 
+## Emitted after inventory content or capacity changes.
+##
+## Unused addresses are reported as [code]-1[/code]. The meaning of [param from_address] and
+## [param to_address] depends on [param type].
 signal on_change(type: CHANGES, from_address: int, to_address: int)
 
+## Inventory changes reported by [signal on_change].
 enum CHANGES {
+	## Items were added to an existing or new stack.
 	add,
+	## Items were removed from a stack.
 	remove,
+	## Items moved between addresses in this inventory.
 	move,
+	## Two occupied addresses exchanged their stacks.
 	swap,
+	## Items moved between different inventories.
 	transfer,
+	## A stack was replaced or cleared directly.
 	set,
+	## The address capacity changed.
 	size,
+	## The complete inventory dictionary was replaced.
 	inventory,
 }
 
+## Number of valid addresses in the inventory.
+##
+## Values are clamped to zero or greater. Shrinking the inventory removes stacks whose
+## addresses no longer fit.
 @export_storage var size: int:
 	set(value):
 		value = maxi(value, 0)
@@ -27,6 +49,10 @@ enum CHANGES {
 					inventory.erase(address)
 		size = value
 		_emit_change(CHANGES.size, -1, -1)
+## Maps each occupied address to its [SwiftItemStack].
+##
+## Replacing the dictionary emits a [code]CHANGES.inventory[/code] change. Prefer the mutation
+## methods when changing individual stacks so observers receive address-specific events.
 @export var inventory: Dictionary[int, SwiftItemStack] = {}:
 	set(value):
 		if inventory == value:
@@ -35,6 +61,10 @@ enum CHANGES {
 		_emit_change(CHANGES.inventory, -1, -1)
 
 
+## Adds up to [param quantity] items described by [param data].
+##
+## Existing compatible stacks are filled before new stacks are created. Returns the quantity
+## that could not be added because the inventory ran out of capacity.
 func try_add(data: SwiftItemData, quantity: int) -> int:
 	if quantity <= 0:
 		return 0
@@ -66,6 +96,10 @@ func try_add(data: SwiftItemData, quantity: int) -> int:
 	return 0
 
 
+## Removes exactly [param quantity] items from [param from_address].
+##
+## Returns [constant @GlobalScope.OK] on success, or [constant @GlobalScope.FAILED] when the
+## address, stack, or quantity is invalid. The stack is removed when its amount reaches zero.
 func try_remove(from_address: int, quantity: int) -> Error:
 	if not _is_valid_address(from_address):
 		return FAILED
@@ -85,6 +119,10 @@ func try_remove(from_address: int, quantity: int) -> Error:
 	return OK
 
 
+## Moves up to [param quantity] items between addresses in this inventory.
+##
+## Compatible destination stacks are filled up to their maximum stack size. Returns the
+## quantity that could not be moved.
 func try_move(from_address: int, to_address: int, quantity: int) -> int:
 	if not _is_valid_address(from_address):
 		return quantity
@@ -133,6 +171,10 @@ func try_move(from_address: int, to_address: int, quantity: int) -> int:
 	return quantity - moved
 
 
+## Swaps the occupied stacks at [param first_address] and [param second_address].
+##
+## When [param other_inventory] is omitted, both addresses belong to this inventory. Returns
+## [constant @GlobalScope.FAILED] if either address is invalid or empty.
 func try_swap(
 	first_address: int, second_address: int, other_inventory: SwiftInventory = null
 ) -> Error:
@@ -161,6 +203,10 @@ func try_swap(
 	return OK
 
 
+## Transfers up to [param quantity] items to [param other_inventory].
+##
+## Items are placed at [param to_address], merging with a compatible stack when possible.
+## Returns the quantity that could not be transferred.
 func try_transfer(
 	from_address: int, other_inventory: SwiftInventory, to_address: int, quantity: int
 ) -> int:
@@ -212,6 +258,11 @@ func try_transfer(
 	return quantity - moved
 
 
+## Transfers as much of this inventory as possible into [param other_inventory].
+##
+## Returns [constant @GlobalScope.OK] when every item was transferred, or
+## [constant @GlobalScope.FAILED] when either the destination is invalid or some items remain in
+## this inventory.
 func transfer_to(other_inventory: SwiftInventory) -> Error:
 	if other_inventory == null:
 		return FAILED
@@ -242,7 +293,21 @@ func transfer_to(other_inventory: SwiftInventory) -> Error:
 	return OK
 
 
-func set_stack(address: int, data: SwiftItemData, quantity: int = 1) -> Error:
+## Stores an existing [param stack] resource at [param address].
+##
+## The stack is assigned directly without address validation or a change signal. Use
+## [method set_stack_from_data] when callers need validation and observer notification.
+func set_stack(address: int, stack: SwiftItemStack) -> Error:
+	inventory[address] = stack
+	return OK
+
+
+## Creates or replaces a stack at [param address] from [param data].
+##
+## The quantity is clamped to the item's maximum stack size. Passing [code]null[/code] data or
+## a non-positive quantity clears the address. Returns [constant @GlobalScope.FAILED] for an
+## invalid address.
+func set_stack_from_data(address: int, data: SwiftItemData, quantity: int = 1) -> Error:
 	if not _is_valid_address(address):
 		return FAILED
 
@@ -258,12 +323,14 @@ func set_stack(address: int, data: SwiftItemData, quantity: int = 1) -> Error:
 	return OK
 
 
+## Returns [code]true[/code] when every valid address contains a stack.
 func is_full() -> bool:
 	return _get_first_empty_address() == -1
 
 
 func _emit_change(type: CHANGES, from_address: int, to_address: int) -> void:
 	on_change.emit(type, from_address, to_address)
+	prints(CHANGES.keys()[type], from_address, to_address)
 	emit_changed()
 
 

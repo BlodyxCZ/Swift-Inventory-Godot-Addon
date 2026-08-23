@@ -10,21 +10,20 @@ Build inventories with unmatched speed.
 
 [![Godot Engine](https://img.shields.io/badge/Godot-4.4%2B-478CBF?logo=godot-engine&logoColor=white)](https://godotengine.org/)
 [![Language](https://img.shields.io/badge/Language-GDScript-478CBF?logo=godot-engine&logoColor=white)](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/)
-[![Version](https://img.shields.io/badge/Version-2.0.0-6C63FF)](addons/Swift_Inventory/plugin.cfg)
+[![Version](https://img.shields.io/badge/Version-2.1.0-6C63FF)](plugin.cfg)
 ![Status](https://img.shields.io/badge/Status-In%20Development-orange)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-[Godot Asset Store](https://store.godotengine.org/asset/blodyx/swift-inventory/) · [GitHub](https://github.com/BlodyxCZ/Swift-Inventory-Godot-Addon) · [Included Example](addons/Swift_Inventory/Example/example_scene.tscn)
+[Godot Asset Store](https://store.godotengine.org/asset/blodyx/swift-inventory/) · [GitHub](https://github.com/BlodyxCZ/Swift-Inventory-Godot-Addon) · [Included Example](Example/example_scene.tscn)
 
 </div>
 
 ## ⛑️ Development Status
 
-Swift Inventory is actively being developed. The core inventory resources, grid UI, slots, stacking, transfers, runtime drag and drop, and editor workflow are available now.
+Swift Inventory is actively being developed. The core inventory resources, grid UI, free-form drop areas, slots, stacking, transfers, runtime drag and drop, and editor workflow are available now.
 
-The following parts are not yet complete:
+Known limitation:
 
-- `SwiftDropArea` is a work in progress and does not provide drop-area behavior yet.
 - `SwiftInfo` has a known issue where the information panel can hide after a dragged item is dropped.
 
 If you encounter another problem, [open a GitHub issue](https://github.com/BlodyxCZ/Swift-Inventory-Godot-Addon/issues).
@@ -36,15 +35,16 @@ If you encounter another problem, [open a GitHub issue](https://github.com/Blody
 - **Per-item stack limits** — every item defines its own `max_stack_size`.
 - **Move, split, swap, and transfer operations** — manipulate stacks within one inventory or between inventories.
 - **Automatic grid synchronization** — `SwiftGrid` creates and binds slots to match inventory size.
+- **Free-form drop areas** — `SwiftDropArea` places occupied slots where stacks are dropped and supports cross-inventory transfers.
 - **Runtime drag and drop** — `SwiftSlot` can move, merge, swap, or transfer stacks.
 - **Editor tooling** — select generated slots and drop `SwiftItemData` resources onto them in the 2D editor.
 - **Change notifications** — react to inventory mutations through one typed signal.
 - **Extensible item information UI** — subclass `SwiftInfo` to create a custom tooltip or hover panel.
-- **Included example** — inspect or run a ready-made player-and-chest inventory scene.
+- **Included example** — inspect or run player, chest, and free-form drop-area inventories.
 - **Lightweight integration** — no singleton is required, and the inventory logic is not tied to a particular game.
 
 > [!TIP]
-> `SwiftInventory` owns the data. `SwiftGrid` and `SwiftSlot` present and interact with that data. This separation lets multiple gameplay systems or interfaces use the same inventory resource.
+> `SwiftInventory` owns the data. `SwiftGrid`, `SwiftDropArea`, and `SwiftSlot` present and interact with that data. This separation lets multiple gameplay systems or interfaces use the same inventory resource.
 
 ## 🧩 Architecture
 
@@ -53,10 +53,11 @@ If you encounter another problem, [open a GitHub issue](https://github.com/Blody
 | `SwiftItemData` | `Resource` | Static item definition: ID, name, description, icon, tags, and stack limit |
 | `SwiftItemStack` | `Resource` | An item definition plus its current amount |
 | `SwiftInventory` | `Resource` | Inventory size, stack state, operations, and change notifications |
-| `SwiftGrid` | `Container` | Creates, binds, sizes, and lays out inventory slots |
+| `SwiftContainer` | `Container` | Shared inventory synchronization and slot management for container layouts |
+| `SwiftGrid` | `SwiftContainer` | Creates, binds, sizes, and lays out every inventory address in a grid |
+| `SwiftDropArea` | `SwiftContainer` | Places occupied inventory slots at their free-form drop positions |
 | `SwiftSlot` | `Panel` | Displays one inventory address and handles drag and drop |
 | `SwiftInfo` | `Control` | Base control for a custom item hover panel |
-| `SwiftDropArea` | `Control` | Reserved for drop-area behavior; currently WIP |
 | `Swift_Inventory.gd` | `EditorPlugin` | Adds slot selection and item-resource dropping to the 2D editor |
 
 ## 🗃️ Installation
@@ -142,15 +143,21 @@ Open and run:
 res://addons/Swift_Inventory/Example/example_scene.tscn
 ```
 
-The scene demonstrates two inventories, item resources, stack amounts, runtime drag and drop, and a `SwiftInfo` panel.
+The scene demonstrates grid and free-form inventories, item resources, stack amounts, runtime drag and drop, and a `SwiftInfo` panel.
+
+## 🫴 Free-Form Drop Areas
+
+Add a `SwiftDropArea` to a `Control`-based scene, assign a `SwiftInventory` to `swift_inventory`, and configure `slot_size`. When a stack is dropped onto the area, it transfers into the first available address and its `SwiftSlot` is positioned at the drop point.
+
+Unlike `SwiftGrid`, a `SwiftDropArea` only creates slots for occupied addresses. If every existing address is occupied, a successful drop expands the destination inventory by one address.
 
 ## 🔀 Editor Workflow
 
 With the plugin enabled:
 
 1. Select a configured `SwiftGrid` in the 2D editor.
-2. Click one of its generated slots. First click always selects the whole `SwiftGrid` node. Second click with `SwiftGrid` node selected, will inspect the clicked `SwiftSlot`.
-3. Drag a `.tres` file containing `SwiftItemData` from the FileSystem dock onto a visible slot. (Cursor will say you are not allowed to drop data, but it works regardless. Will be fixed in the future)
+2. Click one of its generated slots. The first click selects the `SwiftGrid`; with the grid selected, a second click inspects the `SwiftSlot`.
+3. Drag a `.tres` file containing `SwiftItemData` from the FileSystem dock onto a visible slot. The cursor changes to the can-drop shape over a valid target.
 4. Select the slot to adjust its item or amount in the Inspector.
 
 These edits update the assigned `SwiftInventory` resource. Only `.tres` resources containing `SwiftItemData` are accepted by the editor drop workflow.
@@ -229,13 +236,19 @@ var result := inventory_a.transfer_to(inventory_b)
 ### Set or clear an address
 
 ```gdscript
-inventory.set_stack(4, item_data, 3)    # address, SwiftItemData, amount 
+inventory.set_stack_from_data(4, item_data, 3)
 ```
 
-The quantity is clamped to the item's `max_stack_size`. Clear the address by passing `null` or a non-positive quantity:
+`set_stack_from_data()` validates the address, clamps the quantity to the item's `max_stack_size`, and emits a change notification. Clear the address by passing `null` or a non-positive quantity:
 
 ```gdscript
-inventory.set_stack(4, null)            # address, SwiftItemData
+inventory.set_stack_from_data(4, null)
+```
+
+Use `set_stack()` when you already have a `SwiftItemStack` resource and intentionally want to assign it directly without address validation or a change notification:
+
+```gdscript
+inventory.set_stack(4, SwiftItemStack.new(item_data, 3))
 ```
 
 ## 🫳 Runtime Drag and Drop
@@ -257,7 +270,7 @@ Dropping onto another `SwiftSlot` can:
 - swap different occupied stacks,
 - transfer items between inventories.
 
-Custom UI can participate in the same workflow by producing or accepting the same payload shape.
+Dropping onto a `SwiftDropArea` transfers the stack to its inventory and positions the resulting slot at the drop point. Custom UI can participate in the same workflow by producing or accepting the same payload shape.
 
 ## 📡 Reacting to Inventory Changes
 
@@ -369,7 +382,8 @@ The pointer offset property is currently named `position_offest` in the API. See
 | `try_swap(first, second, other_inventory = null)` | `Error` | Swaps two occupied addresses |
 | `try_transfer(from, other_inventory, to, quantity)` | `int` | Transfers items and returns the remaining transferable quantity |
 | `transfer_to(other_inventory)` | `Error` | Moves as much of this inventory as possible into another inventory |
-| `set_stack(address, data, quantity = 1)` | `Error` | Replaces or clears one address |
+| `set_stack(address, stack)` | `Error` | Directly assigns an existing stack resource without validation or notification |
+| `set_stack_from_data(address, data, quantity = 1)` | `Error` | Validates, replaces, or clears one address and emits a change notification |
 | `is_full()` | `bool` | Returns whether every address is occupied |
 | `size` | `int` | Number of valid inventory addresses |
 | `inventory` | `Dictionary[int, SwiftItemStack]` | Address-to-stack mapping |
@@ -397,16 +411,20 @@ The pointer offset property is currently named `position_offest` in the API. See
 </details>
 
 <details>
-<summary><strong>SwiftGrid, SwiftSlot, and SwiftInfo</strong></summary>
+<summary><strong>SwiftContainer, SwiftGrid, SwiftDropArea, SwiftSlot, and SwiftInfo</strong></summary>
 
 <br>
 
 | Type | API | Description |
 | --- | --- | --- |
+| `SwiftContainer` | `swift_inventory` | Inventory represented by the container |
+| `SwiftContainer` | `slot_size` | Pixel size assigned to child slots |
 | `SwiftGrid` | `swift_inventory` | Inventory represented by the grid |
 | `SwiftGrid` | `inventory_size` | Proxy for `swift_inventory.size` |
 | `SwiftGrid` | `slot_size` | Pixel size of generated slots |
 | `SwiftGrid` | `separation` | Horizontal and vertical space between slots |
+| `SwiftDropArea` | `swift_inventory` | Inventory that receives dropped stacks |
+| `SwiftDropArea` | `slot_size` | Pixel size of positioned slots |
 | `SwiftSlot` | `item_data` | Editor-facing item definition for this address |
 | `SwiftSlot` | `amount` | Editor-facing amount for this address |
 | `SwiftSlot` | `swift_inventory` | Inventory to which the slot is bound |

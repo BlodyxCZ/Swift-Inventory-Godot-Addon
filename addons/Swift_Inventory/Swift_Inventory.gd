@@ -2,6 +2,7 @@
 extends EditorPlugin
 
 var editor_drag_data: Variant
+var editor_drag_item_data: SwiftItemData
 
 
 func _enter_tree() -> void:
@@ -27,6 +28,9 @@ func _handles(object: Object) -> bool:
 func _forward_canvas_gui_input(event: InputEvent) -> bool:
 	var viewport := EditorInterface.get_editor_viewport_2d()
 
+	if event is InputEventMouseMotion and editor_drag_item_data and _find_hovered_slot(viewport):
+		_show_can_drop_cursor.call_deferred()
+
 	if event is InputEventMouseButton:
 		var slot := _find_hovered_slot(viewport)
 		if (
@@ -48,6 +52,7 @@ func _notification(what: int) -> void:
 		NOTIFICATION_DRAG_BEGIN:
 			var editor_viewport := get_viewport()
 			editor_drag_data = editor_viewport.gui_get_drag_data()
+			editor_drag_item_data = _get_dragged_item_data(editor_drag_data)
 
 		NOTIFICATION_DRAG_END:
 			if editor_drag_data is Dictionary and editor_drag_data.get("type") == "files":
@@ -66,6 +71,36 @@ func _notification(what: int) -> void:
 							slot.item_data = data
 
 			editor_drag_data = null
+			editor_drag_item_data = null
+
+
+static func _get_dragged_item_data(data: Variant) -> SwiftItemData:
+	if not (data is Dictionary) or data.get("type") != "files":
+		return null
+
+	var files_value: Variant = data.get("files")
+	if not (files_value is PackedStringArray):
+		return null
+
+	var files: PackedStringArray = files_value
+	for file: String in files:
+		if file.get_extension() != "tres":
+			continue
+
+		var resource := load(file)
+		if resource is SwiftItemData:
+			return resource
+
+	return null
+
+
+func _show_can_drop_cursor() -> void:
+	if not editor_drag_item_data:
+		return
+
+	var viewport := EditorInterface.get_editor_viewport_2d()
+	if _find_hovered_slot(viewport):
+		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_CAN_DROP)
 
 
 func _find_hovered_slot(viewport: Viewport) -> SwiftSlot:

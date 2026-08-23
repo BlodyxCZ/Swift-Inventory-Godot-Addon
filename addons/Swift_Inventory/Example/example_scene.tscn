@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://e7w5ci5vbgb2"]
 
+[ext_resource type="Script" uid="uid://ct5e5bb1c06p0" path="res://addons/Swift_Inventory/Classes/SwiftDropArea.gd" id="1_6umnx"]
 [ext_resource type="Script" uid="uid://dnp6muoj3e72d" path="res://addons/Swift_Inventory/Classes/SwiftGrid.gd" id="1_gswx4"]
 [ext_resource type="Script" uid="uid://8xv7tupboav2" path="res://addons/Swift_Inventory/Classes/SwiftItemStack.gd" id="2_6umnx"]
 [ext_resource type="Resource" uid="uid://byb0hj5t6souk" path="res://addons/Swift_Inventory/Example/sword_data.tres" id="3_wpwti"]
@@ -7,23 +8,9 @@
 [ext_resource type="Resource" uid="uid://dtwuywatdmtxm" path="res://addons/Swift_Inventory/Example/player_inventory.tres" id="6_wpwti"]
 [ext_resource type="Script" uid="uid://bxikxeqm4i4e3" path="res://addons/Swift_Inventory/Example/example_info_panel.gd" id="7_6umnx"]
 [ext_resource type="Script" uid="uid://d23wkaooq0n8c" path="res://addons/Swift_Inventory/Classes/SwiftInfo.gd" id="7_wpwti"]
+[ext_resource type="Resource" uid="uid://wao11fbqyqwb" path="res://addons/Swift_Inventory/Example/drop_inventory.tres" id="9_nih2c"]
 
 [sub_resource type="Resource" id="Resource_6umnx"]
-script = ExtResource("2_6umnx")
-item_data = ExtResource("3_wpwti")
-amount = 1
-
-[sub_resource type="Resource" id="Resource_wpwti"]
-script = ExtResource("2_6umnx")
-item_data = ExtResource("3_wpwti")
-amount = 1
-
-[sub_resource type="Resource" id="Resource_63s4f"]
-script = ExtResource("2_6umnx")
-item_data = ExtResource("3_wpwti")
-amount = 1
-
-[sub_resource type="Resource" id="Resource_nih2c"]
 script = ExtResource("2_6umnx")
 item_data = ExtResource("3_wpwti")
 amount = 1
@@ -33,7 +20,27 @@ script = ExtResource("2_6umnx")
 item_data = ExtResource("3_wpwti")
 amount = 1
 
+[sub_resource type="Resource" id="Resource_wpwti"]
+script = ExtResource("2_6umnx")
+item_data = ExtResource("3_wpwti")
+amount = 1
+
 [sub_resource type="Resource" id="Resource_8wodt"]
+script = ExtResource("2_6umnx")
+item_data = ExtResource("3_wpwti")
+amount = 1
+
+[sub_resource type="Resource" id="Resource_nih2c"]
+script = ExtResource("2_6umnx")
+item_data = ExtResource("3_wpwti")
+amount = 1
+
+[sub_resource type="Resource" id="Resource_63s4f"]
+script = ExtResource("2_6umnx")
+item_data = ExtResource("3_wpwti")
+amount = 1
+
+[sub_resource type="Resource" id="Resource_gjult"]
 script = ExtResource("2_6umnx")
 item_data = ExtResource("3_wpwti")
 amount = 1
@@ -47,7 +54,8 @@ inventory = Dictionary[int, ExtResource("2_6umnx")]({
 13: SubResource("Resource_wpwti"),
 14: SubResource("Resource_8wodt"),
 17: SubResource("Resource_nih2c"),
-35: SubResource("Resource_63s4f")
+35: SubResource("Resource_63s4f"),
+38: SubResource("Resource_gjult")
 })
 metadata/_custom_type_script = "uid://ddpogvrv0ol54"
 
@@ -87,17 +95,17 @@ grow_vertical = 2
 custom_minimum_size = Vector2(676, 268)
 layout_mode = 2
 script = ExtResource("1_gswx4")
-swift_inventory = SubResource("Resource_txi3l")
 inventory_size = 40
+swift_inventory = SubResource("Resource_txi3l")
 slot_size = Vector2i(64, 64)
 metadata/_custom_type_script = "uid://dnp6muoj3e72d"
 
 [node name="Player" type="VBoxContainer" parent="." unique_id=713867381]
 layout_mode = 0
-offset_left = 363.0
-offset_top = 359.0
-offset_right = 787.0
-offset_bottom = 606.0
+offset_left = 567.0
+offset_top = 364.0
+offset_right = 991.0
+offset_bottom = 611.0
 
 [node name="Label" type="Label" parent="Player" unique_id=529326589]
 layout_mode = 2
@@ -121,10 +129,39 @@ grow_vertical = 2
 custom_minimum_size = Vector2(404, 200)
 layout_mode = 2
 script = ExtResource("1_gswx4")
-swift_inventory = ExtResource("6_wpwti")
 inventory_size = 18
+swift_inventory = ExtResource("6_wpwti")
 slot_size = Vector2i(64, 64)
 metadata/_custom_type_script = "uid://dnp6muoj3e72d"
+
+[node name="DropArea" type="VBoxContainer" parent="." unique_id=1927104511]
+layout_mode = 0
+offset_left = 159.0
+offset_top = 362.0
+offset_right = 492.0
+offset_bottom = 609.0
+
+[node name="Label" type="Label" parent="DropArea" unique_id=1904685971]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Drop Area"
+horizontal_alignment = 1
+
+[node name="Panel" type="Panel" parent="DropArea" unique_id=761507328]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SwiftDropArea" type="Container" parent="DropArea/Panel" unique_id=101203171]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6umnx")
+swift_inventory = ExtResource("9_nih2c")
+slot_size = Vector2i(64, 64)
+metadata/_custom_type_script = "uid://ct5e5bb1c06p0"
 
 [node name="SwiftInfo" type="Control" parent="." unique_id=1574952974]
 z_index = 1

@@ -1,43 +1,27 @@
 @tool
 @icon("res://addons/Swift_Inventory/Icons/SwiftGrid.svg")
+## Grid layout that presents every address in a [SwiftInventory] as a [SwiftSlot].
+##
+## The grid automatically creates and binds slots to match the inventory capacity, then lays
+## them out using [member slot_size] and [member separation].
 class_name SwiftGrid
-extends Container
+extends SwiftContainer
 
-@export var swift_inventory: SwiftInventory:
-	set(value):
-		var previous := swift_inventory
-		if previous and previous.on_change.is_connected(_on_swift_change):
-			previous.on_change.disconnect(_on_swift_change)
-		swift_inventory = value
-		if swift_inventory and not swift_inventory.on_change.is_connected(_on_swift_change):
-			swift_inventory.on_change.connect(_on_swift_change)
-		notify_property_list_changed()
-		if is_node_ready():
-			_sync_slots()
-			_refresh_slots()
+
+## Number of addresses displayed by the grid.
+##
+## This property proxies [member SwiftInventory.size] on [member swift_inventory].
 @export var inventory_size: int:
 	set(value):
 		if swift_inventory:
 			swift_inventory.size = value
 	get:
 		return swift_inventory.size if swift_inventory else 0
-@export_custom(PROPERTY_HINT_LINK, "suffix:px") var slot_size: Vector2i = Vector2i(16, 16):
-	set(value):
-		slot_size = value
-		queue_sort()
+## Horizontal and vertical spacing, in pixels, between slots.
 @export_custom(PROPERTY_HINT_LINK, "suffix:px") var separation: Vector2i = Vector2i(4, 4):
 	set(value):
 		separation = value
 		queue_sort()
-
-
-func _ready() -> void:
-	_sync_slots()
-
-
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_SORT_CHILDREN:
-		_sort_slots()
 
 
 func _validate_property(property: Dictionary) -> void:
@@ -55,52 +39,26 @@ func _validate_property(property: Dictionary) -> void:
 		property.usage &= ~PROPERTY_USAGE_EDITOR
 
 
-func _on_swift_change(change: SwiftInventory.CHANGES, from_address: int, to_address: int) -> void:
-	match change:
-		SwiftInventory.CHANGES.add:
-			_on_swift_change_add(to_address)
-		SwiftInventory.CHANGES.remove:
-			_on_swift_change_remove(from_address)
-		SwiftInventory.CHANGES.move:
-			_on_swift_change_move(from_address, to_address)
-		SwiftInventory.CHANGES.swap:
-			_on_swift_change_swap(from_address, to_address)
-		SwiftInventory.CHANGES.transfer:
-			_on_swift_change_transfer(from_address, to_address)
-		SwiftInventory.CHANGES.set:
-			_on_swift_change_set(to_address)
-		SwiftInventory.CHANGES.size:
-			_on_swift_change_size()
-		SwiftInventory.CHANGES.inventory:
-			_on_swift_change_inventory()
-
-
 func _on_swift_change_add(address: int) -> void:
 	_refresh_slot(address)
 
-
 func _on_swift_change_remove(address: int) -> void:
 	_refresh_slot(address)
-
 
 func _on_swift_change_move(from_address: int, to_address: int) -> void:
 	_refresh_slot(from_address)
 	_refresh_slot(to_address)
 
-
 func _on_swift_change_swap(first_address: int, second_address: int) -> void:
 	_refresh_slot(first_address)
 	_refresh_slot(second_address)
-
 
 func _on_swift_change_transfer(from_address: int, to_address: int) -> void:
 	_refresh_slot(from_address)
 	_refresh_slot(to_address)
 
-
 func _on_swift_change_set(address: int) -> void:
 	_refresh_slot(address)
-
 
 func _on_swift_change_size() -> void:
 	if not is_node_ready():
@@ -108,16 +66,13 @@ func _on_swift_change_size() -> void:
 	_sync_slots()
 	_refresh_slots()
 
-
 func _on_swift_change_inventory() -> void:
 	_refresh_slots()
 
 
 func _sync_slots() -> void:
 	while get_child_count() > inventory_size:
-		var slot := get_child(-1)
-		remove_child(slot)
-		slot.queue_free()
+		_remove_slot(-1)
 	while get_child_count() < inventory_size:
 		_add_slot(get_child_count())
 	for index in get_child_count():
@@ -126,15 +81,6 @@ func _sync_slots() -> void:
 			slot.setup()
 			slot.bind(swift_inventory, index)
 	queue_sort()
-
-
-func _add_slot(index: int) -> void:
-	var slot := SwiftSlot.new()
-	add_child(slot)
-	slot.setup()
-	slot.name = ("Slot_%s" % index).pad_zeros(2)
-	slot.size = slot_size
-	slot.bind(swift_inventory, index)
 
 
 func _sort_slots() -> void:
@@ -152,16 +98,3 @@ func _sort_slots() -> void:
 		)
 
 		fit_child_in_rect(slot, Rect2(slot_position, slot_size))
-
-
-func _refresh_slots() -> void:
-	for index in get_child_count():
-		_refresh_slot(index)
-
-
-func _refresh_slot(index: int) -> void:
-	if index < 0 or index >= get_child_count():
-		return
-	var slot := get_child(index) as SwiftSlot
-	if slot:
-		slot.refresh()

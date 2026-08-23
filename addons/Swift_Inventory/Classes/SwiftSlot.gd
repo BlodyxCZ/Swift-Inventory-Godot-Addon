@@ -1,10 +1,19 @@
 @tool
 @icon("res://addons/Swift_Inventory/Icons/SwiftSlot.svg")
+## Interactive control bound to one address in a [SwiftInventory].
+##
+## Displays the bound stack's icon and amount, exposes editor-friendly stack properties, and
+## supports moving, stacking, swapping, and transferring items through Godot drag and drop.
 class_name SwiftSlot
 extends Panel
 
+## Emitted after the slot's visuals and inspector properties are refreshed.
 signal refreshed
 
+## Item definition stored at this slot's address.
+##
+## In the editor, assigning this property replaces the bound stack while preserving its current
+## amount when possible.
 @export var item_data: SwiftItemData:
 	set(value):
 		if not Engine.is_editor_hint():
@@ -12,42 +21,61 @@ signal refreshed
 		if not swift_inventory:
 			return
 		var current_amount := item.amount if item else 1
-		swift_inventory.set_stack(address, value, current_amount)
+		swift_inventory.set_stack_from_data(address, value, current_amount)
 	get:
 		return item.item_data if item else null
+## Number of items stored at this slot's address.
+##
+## In the editor, assigning this property recreates the bound stack with the requested amount.
 @export var amount: int:
 	set(value):
 		if not Engine.is_editor_hint():
 			return
 		if not swift_inventory or not item:
 			return
-		swift_inventory.set_stack(address, item.item_data, value)
+		swift_inventory.set_stack_from_data(address, item.item_data, value)
 	get:
 		return item.amount if item else 0
 
+## Inventory resource currently bound to this slot.
 var swift_inventory: SwiftInventory
+## Address in [member swift_inventory] represented by this slot, or [code]-1[/code] when unbound.
 var address: int = -1
 
+## Stack currently stored at [member address], or [code]null[/code] when the address is empty.
+##
+## Runtime assignments store the supplied stack in the bound inventory.
 var item: SwiftItemStack:
+	set(value):
+		if Engine.is_editor_hint():
+			return
+		if not swift_inventory:
+			return
+		swift_inventory.set_stack(address, value)
 	get:
 		if not swift_inventory:
 			return null
 		return swift_inventory.inventory.get(address)
+## Texture control used to display [member item_data]'s icon.
 var texture_rect: TextureRect
+## Label used to display [member amount].
 var amount_label: Label
 
 
+## Initializes the slot to expand and fill the space assigned by its parent container.
 func _init() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
 
 
+## Binds the slot to [param slot_address] in [param inventory] and refreshes its presentation.
 func bind(inventory: SwiftInventory, slot_address: int) -> void:
 	swift_inventory = inventory
 	address = slot_address
 	refresh()
 
 
+## Updates the icon, amount label, and inspector properties from the bound inventory stack.
 func refresh() -> void:
 	_refresh_texture()
 	_refresh_label()
@@ -55,6 +83,10 @@ func refresh() -> void:
 	refreshed.emit()
 
 
+## Creates or reuses the child controls used to present the bound stack.
+##
+## Calling this method more than once reuses existing children named [code]SwiftItemIcon[/code]
+## and [code]SwiftItemAmount[/code].
 func setup() -> void:
 	add_to_group("_swift_editor_selectable")
 

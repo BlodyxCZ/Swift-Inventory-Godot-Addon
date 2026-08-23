@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="SwiftInventory" format=3 uid="uid://wao11fbqyqwb"]
+
+[ext_resource type="Script" uid="uid://8xv7tupboav2" path="res://addons/Swift_Inventory/Classes/SwiftItemStack.gd" id="1_foema"]
+[ext_resource type="Script" uid="uid://ddpogvrv0ol54" path="res://addons/Swift_Inventory/Classes/SwiftInventory.gd" id="2_xqqp5"]
+
+[resource]
+script = ExtResource("2_xqqp5")
+metadata/_custom_type_script = "uid://ddpogvrv0ol54"

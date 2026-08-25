@@ -29,6 +29,10 @@ Known limitation:
 
 If you encounter another problem, [open a GitHub issue](https://github.com/BlodyxCZ/Swift-Inventory-Godot-Addon/issues).
 
+## 🎮 Try it now!
+
+[▶ **Play Interactive Example Scene**](https://blodyxcz.github.io/godot-tscn-viewer/runner/?owner=BlodyxCZ&repo=Swift-Inventory-Godot-Addon&scene=res%3A%2F%2Faddons%2FSwift_Inventory%2FExample%2Fexample_scene.tscn&godot=4.7&pack=preview.pck)
+
 ## ✨ Features
 
 - **Resource-based data** — inventory state and item definitions are independent from the UI.

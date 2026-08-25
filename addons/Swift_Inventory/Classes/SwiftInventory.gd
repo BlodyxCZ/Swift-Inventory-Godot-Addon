@@ -330,7 +330,6 @@ func is_full() -> bool:
 
 func _emit_change(type: CHANGES, from_address: int, to_address: int) -> void:
 	on_change.emit(type, from_address, to_address)
-	prints(CHANGES.keys()[type], from_address, to_address)
 	emit_changed()
 
 

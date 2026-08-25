@@ -2,9 +2,7 @@ name: TSCN playable preview
 
 on:
   push:
-    branches:
-      - main
-      - feat/playable-preview-integration
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -12,9 +10,6 @@ permissions:
 
 jobs:
   preview:
-    uses: BlodyxCZ/godot-tscn-viewer/.github/workflows/build-preview.yml@feat/playable-previews
+    uses: BlodyxCZ/godot-tscn-viewer/.github/workflows/build-preview.yml@main
     with:
       godot-version: "4.7"
-      tooling-ref: "feat/playable-previews"
-
-# Feature-branch integration validation; the PR version will reference @main.

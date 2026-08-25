@@ -1,0 +1,15 @@
+name: TSCN playable preview
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  preview:
+    uses: BlodyxCZ/godot-tscn-viewer/.github/workflows/build-preview.yml@main
+    with:
+      godot-version: "4.7"

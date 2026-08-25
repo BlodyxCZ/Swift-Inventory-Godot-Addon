@@ -16,3 +16,5 @@ jobs:
     with:
       godot-version: "4.7"
       tooling-ref: "feat/playable-previews"
+
+# Feature-branch integration validation; the PR version will reference @main.

@@ -25,6 +25,7 @@ Swift Inventory is actively being developed. The core inventory resources, grid 
 Known limitation:
 
 - `SwiftInfo` has a known issue where the information panel can hide after a dragged item is dropped.
+- Left an accidental debug `prints()` in `SwiftInventory`.
 
 If you encounter another problem, [open a GitHub issue](https://github.com/BlodyxCZ/Swift-Inventory-Godot-Addon/issues).
 

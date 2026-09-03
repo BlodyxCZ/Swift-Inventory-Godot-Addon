@@ -43,8 +43,8 @@ var swift_inventory: SwiftInventory
 var address: int = -1
 
 ## Stack currently stored at [member address], or [code]null[/code] when the address is empty.
-##
-## Runtime assignments store the supplied stack in the bound inventory.
+## Runtime assignments validate and store the supplied stack in the bound inventory, then
+## notify every bound container.
 var item: SwiftItemStack:
 	set(value):
 		if Engine.is_editor_hint():
@@ -55,7 +55,7 @@ var item: SwiftItemStack:
 	get:
 		if not swift_inventory:
 			return null
-		return swift_inventory.inventory.get(address)
+		return swift_inventory.get_stack(address)
 ## Texture control used to display [member item_data]'s icon.
 var texture_rect: TextureRect
 ## Label used to display [member amount].
@@ -77,8 +77,13 @@ func bind(inventory: SwiftInventory, slot_address: int) -> void:
 
 ## Updates the icon, amount label, and inspector properties from the bound inventory stack.
 func refresh() -> void:
-	_refresh_texture()
-	_refresh_label()
+	var stack := item
+
+	if texture_rect:
+		texture_rect.texture = stack.item_data.icon if stack else null
+	if amount_label:
+		amount_label.text = str(stack.amount) if stack else ""
+
 	notify_property_list_changed()
 	refreshed.emit()
 
@@ -115,16 +120,6 @@ func setup() -> void:
 		amount_label.offset_bottom = -2.0
 
 
-func _refresh_texture() -> void:
-	if texture_rect:
-		texture_rect.texture = item_data.icon if item_data else null
-
-
-func _refresh_label() -> void:
-	if amount_label:
-		amount_label.text = str(item.amount) if item else ""
-
-
 func _validate_property(property: Dictionary) -> void:
 	if property.name in ["item_data", "amount"]:
 		property.usage &= ~PROPERTY_USAGE_STORAGE
@@ -133,7 +128,7 @@ func _validate_property(property: Dictionary) -> void:
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:
-	if not item or not swift_inventory:
+	if not item:
 		return null
 	set_drag_preview(_get_preview(item))
 	return {
@@ -163,24 +158,17 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	if from_inventory == swift_inventory and from_address == address:
 		return
 
-	var from_stack: SwiftItemStack = from_inventory.inventory.get(from_address)
-	var to_stack: SwiftItemStack = swift_inventory.inventory.get(address)
+	var from_stack := from_inventory.get_stack(from_address)
+	var to_stack := swift_inventory.get_stack(address)
 	if not from_stack:
 		return
 
 	# Different items -> swap.
-	if to_stack and from_stack.item_data.id != to_stack.item_data.id:
-		if from_inventory == swift_inventory:
-			from_inventory.try_swap(from_address, address)
-		else:
-			from_inventory.try_swap(from_address, address, swift_inventory)
+	if to_stack and not from_stack.can_stack_with(to_stack):
+		from_inventory.try_swap(from_address, address, swift_inventory)
 		return
 
-	# Empty slot / same item -> move or stack.
-	if from_inventory == swift_inventory:
-		from_inventory.try_move(from_address, address, quantity)
-	else:
-		from_inventory.try_transfer(from_address, swift_inventory, address, quantity)
+	from_inventory.try_transfer(from_address, swift_inventory, address, quantity)
 
 
 func _get_preview(item: SwiftItemStack) -> Control:

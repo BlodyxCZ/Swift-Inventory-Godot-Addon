@@ -10,7 +10,7 @@ Build inventories with unmatched speed.
 
 [![Godot Engine](https://img.shields.io/badge/Godot-4.4%2B-478CBF?logo=godot-engine&logoColor=white)](https://godotengine.org/)
 [![Language](https://img.shields.io/badge/Language-GDScript-478CBF?logo=godot-engine&logoColor=white)](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/)
-[![Version](https://img.shields.io/badge/Version-2.1.0-6C63FF)](addons/Swift_Inventory/plugin.cfg)
+[![Version](https://img.shields.io/badge/Version-2.2.0-6C63FF)](addons/Swift_Inventory/plugin.cfg)
 ![Status](https://img.shields.io/badge/Status-In%20Development-orange)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
@@ -20,12 +20,11 @@ Build inventories with unmatched speed.
 
 ## ⛑️ Development Status
 
-Swift Inventory is actively being developed. The core inventory resources, grid UI, free-form drop areas, slots, stacking, transfers, runtime drag and drop, and editor workflow are available now.
+Swift Inventory is actively being developed. The core inventory resources, grid UI, free-form drop areas, slots, stacking, stack-specific metadata, transfers, runtime drag and drop, and editor workflow are available now.
 
 Known limitation:
 
 - `SwiftInfo` has a known issue where the information panel can hide after a dragged item is dropped.
-- Left an accidental debug `prints()` in `SwiftInventory`.
 
 If you encounter another problem, [open a GitHub issue](https://github.com/BlodyxCZ/Swift-Inventory-Godot-Addon/issues).
 
@@ -38,8 +37,9 @@ If you encounter another problem, [open a GitHub issue](https://github.com/Blody
 - **Resource-based data** — inventory state and item definitions are independent from the UI.
 - **Automatic stacking** — compatible stacks are filled before empty slots are used.
 - **Per-item stack limits** — every item defines its own `max_stack_size`.
+- **Stack-specific metadata** — store durability, enchantments, or other custom state in `SwiftItemStack.instance_data`.
 - **Move, split, swap, and transfer operations** — manipulate stacks within one inventory or between inventories.
-- **Automatic grid synchronization** — `SwiftGrid` creates and binds slots to match inventory size.
+- **Automatic grid reconciliation** — `SwiftGrid` creates and binds slots to match inventory size.
 - **Free-form drop areas** — `SwiftDropArea` places occupied slots where stacks are dropped and supports cross-inventory transfers.
 - **Runtime drag and drop** — `SwiftSlot` can move, merge, swap, or transfer stacks.
 - **Editor tooling** — select generated slots and drop `SwiftItemData` resources onto them in the 2D editor.
@@ -56,9 +56,9 @@ If you encounter another problem, [open a GitHub issue](https://github.com/Blody
 | Class | Base type | Responsibility |
 | --- | --- | --- |
 | `SwiftItemData` | `Resource` | Static item definition: ID, name, description, icon, tags, and stack limit |
-| `SwiftItemStack` | `Resource` | An item definition plus its current amount |
+| `SwiftItemStack` | `Resource` | An item definition, current amount, and optional stack-specific metadata |
 | `SwiftInventory` | `Resource` | Inventory size, stack state, operations, and change notifications |
-| `SwiftContainer` | `Container` | Shared inventory synchronization and slot management for container layouts |
+| `SwiftContainer` | `Container` | Shared inventory reconciliation and slot management for container layouts |
 | `SwiftGrid` | `SwiftContainer` | Creates, binds, sizes, and lays out every inventory address in a grid |
 | `SwiftDropArea` | `SwiftContainer` | Places occupied inventory slots at their free-form drop positions |
 | `SwiftSlot` | `Panel` | Displays one inventory address and handles drag and drop |
@@ -138,7 +138,7 @@ func _ready() -> void:
 3. Set `inventory_size`, `slot_size`, and `separation` in the Inspector.
 4. Give the grid enough width for the number of columns you want. Slots wrap to the next row based on the available width.
 
-`SwiftGrid` creates the required `SwiftSlot` children and keeps them bound to their matching inventory addresses. Changing the inventory size automatically resynchronizes the grid.
+`SwiftGrid` creates the required `SwiftSlot` children and keeps them bound to their matching inventory addresses. Changing the inventory size automatically reconciles the grid.
 
 ### 4. Try the included example
 
@@ -154,7 +154,7 @@ The scene demonstrates grid and free-form inventories, item resources, stack amo
 
 Add a `SwiftDropArea` to a `Control`-based scene, assign a `SwiftInventory` to `swift_inventory`, and configure `slot_size`. When a stack is dropped onto the area, it transfers into the first available address and its `SwiftSlot` is positioned at the drop point.
 
-Unlike `SwiftGrid`, a `SwiftDropArea` only creates slots for occupied addresses. If every existing address is occupied, a successful drop expands the destination inventory by one address.
+Unlike `SwiftGrid`, a `SwiftDropArea` only creates a visible slot when a stack is explicitly dropped and positioned in the area. Programmatic inventory additions remain unrepresented until a position is assigned through the drop workflow. If every existing address is occupied, a successful drop expands the destination inventory by one address.
 
 ## 🔀 Editor Workflow
 
@@ -178,7 +178,7 @@ if remaining > 0:
     print("%d items did not fit." % remaining)
 ```
 
-Existing compatible stacks are filled first. New stacks are then placed in empty addresses until the quantity is exhausted or every address is occupied.
+`try_add()` creates stacks with empty `instance_data`. It fills existing stacks only when their item ID and instance data match, then uses empty addresses until the quantity is exhausted or every address is occupied.
 
 ### Remove items
 
@@ -201,7 +201,7 @@ var remaining := inventory.try_move(
 )
 ```
 
-An empty destination receives the stack or a split stack. A destination containing the same item is filled up to its stack limit. Different item types are not moved by this method.
+An empty destination receives the stack or a split stack. A destination is filled up to its stack limit only when its item ID and complete `instance_data` dictionary match the source. A split stack receives a deep copy of the source metadata so later changes do not affect the original stack.
 
 ### Swap stacks
 
@@ -238,6 +238,8 @@ var result := inventory_a.transfer_to(inventory_b)
 
 `transfer_to()` returns `OK` only when the source inventory becomes empty. It returns `FAILED` if any items remain.
 
+Transfers preserve `instance_data` and fill compatible destination stacks before using empty addresses.
+
 ### Set or clear an address
 
 ```gdscript
@@ -250,11 +252,30 @@ inventory.set_stack_from_data(4, item_data, 3)
 inventory.set_stack_from_data(4, null)
 ```
 
-Use `set_stack()` when you already have a `SwiftItemStack` resource and intentionally want to assign it directly without address validation or a change notification:
+Use `set_stack()` when you already have a `SwiftItemStack` resource. It validates the address, item data, positive amount, and stack capacity, then emits a `CHANGES.set` notification:
 
 ```gdscript
 inventory.set_stack(4, SwiftItemStack.new(item_data, 3))
 ```
+
+Pass `null` to clear an occupied address. Use `has_stack(address)` and `get_stack(address)` for validated stack queries. Mutating the `inventory` dictionary directly is unsupported because it bypasses address validation and change notifications.
+
+### Store stack-specific data
+
+Pass metadata when creating a stack, or edit its `instance_data` dictionary later:
+
+```gdscript
+var sword_stack := SwiftItemStack.new(
+	sword_data,
+	1,
+	{&"durability": 75, &"enchantment": &"fire"}
+)
+inventory.set_stack(4, sword_stack)
+```
+
+`instance_data` belongs to the whole stack. Use `max_stack_size = 1` when each stack must represent one independently changing item. Swift Inventory does not generate a stable item-instance ID automatically; store one in `instance_data` if your persistence model requires it.
+
+Stacks merge only when both their item IDs and their complete `instance_data` dictionaries match. Splitting or partially transferring a stack deep-copies the dictionary so each resulting stack can be changed independently.
 
 ## 🫳 Runtime Drag and Drop
 
@@ -271,7 +292,7 @@ inventory.set_stack(4, SwiftItemStack.new(item_data, 3))
 Dropping onto another `SwiftSlot` can:
 
 - move a stack into an empty address,
-- merge matching stacks,
+- merge stacks with matching item IDs and instance data,
 - swap different occupied stacks,
 - transfer items between inventories.
 
@@ -360,11 +381,11 @@ class_name EquipmentData
 extends SwiftItemData
 
 @export var damage: float
-@export var durability: int
+@export var max_durability: int
 @export var equipment_slot: StringName
 ```
 
-Stacks continue to accept subclasses because they reference the `SwiftItemData` base type.
+Stacks continue to accept subclasses because they reference the `SwiftItemData` base type. Keep shared definition values, such as maximum durability, on `SwiftItemData`; store changing values, such as current durability, in `SwiftItemStack.instance_data` so editing one stack does not mutate every stack that references the same item resource.
 
 ## 📰 Custom Item Information
 
@@ -387,8 +408,10 @@ The pointer offset property is currently named `position_offest` in the API. See
 | `try_swap(first, second, other_inventory = null)` | `Error` | Swaps two occupied addresses |
 | `try_transfer(from, other_inventory, to, quantity)` | `int` | Transfers items and returns the remaining transferable quantity |
 | `transfer_to(other_inventory)` | `Error` | Moves as much of this inventory as possible into another inventory |
-| `set_stack(address, stack)` | `Error` | Directly assigns an existing stack resource without validation or notification |
+| `set_stack(address, stack)` | `Error` | Validates, assigns, or clears an existing stack resource and emits a change notification |
 | `set_stack_from_data(address, data, quantity = 1)` | `Error` | Validates, replaces, or clears one address and emits a change notification |
+| `has_stack(address)` | `bool` | Returns whether a valid address contains a stack |
+| `get_stack(address)` | `SwiftItemStack` | Returns the stack at a valid occupied address, or `null` |
 | `is_full()` | `bool` | Returns whether every address is occupied |
 | `size` | `int` | Number of valid inventory addresses |
 | `inventory` | `Dictionary[int, SwiftItemStack]` | Address-to-stack mapping |
@@ -411,6 +434,8 @@ The pointer offset property is currently named `position_offest` in the API. See
 | `SwiftItemData` | `tags` | Game-defined item categories |
 | `SwiftItemStack` | `item_data` | Item definition represented by the stack |
 | `SwiftItemStack` | `amount` | Current stack quantity |
+| `SwiftItemStack` | `instance_data` | Stack-specific custom state used when deciding whether two stacks can merge |
+| `SwiftItemStack` | `can_stack_with(other)` | Returns whether item IDs and instance data match |
 | `SwiftItemStack` | `get_reserve()` | Remaining room before reaching the stack limit |
 
 </details>

@@ -37,23 +37,12 @@ func _ready() -> void:
 	top_level = true
 	z_index = 1
 	mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE
-	for child in get_all_children(self):
-		child.mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE
+	for node in find_children("*", "Control", true, false):
+		var child := node as Control
+		child.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _process(_delta: float) -> void:
 	global_position = get_global_mouse_position() + position_offest
 	var hovered = get_viewport().gui_get_hovered_control()
 	hovered_slot = hovered if hovered is SwiftSlot else null
-
-
-## Returns all descendant [Control] nodes below [param node].
-func get_all_children(node: Control) -> Array:
-	var nodes: Array = []
-	for child in node.get_children():
-		if child.get_child_count() > 0:
-			nodes.append(child)
-			nodes.append_array(get_all_children(child))
-		else:
-			nodes.append(child)
-	return nodes.filter(func(candidate: Variant) -> bool: return candidate is Control)

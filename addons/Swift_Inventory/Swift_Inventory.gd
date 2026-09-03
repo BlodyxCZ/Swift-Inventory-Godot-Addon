@@ -5,22 +5,6 @@ var editor_drag_data: Variant
 var editor_drag_item_data: SwiftItemData
 
 
-func _enter_tree() -> void:
-	pass
-
-
-func _exit_tree() -> void:
-	pass
-
-
-func _enable_plugin() -> void:
-	pass
-
-
-func _disable_plugin() -> void:
-	pass
-
-
 func _handles(object: Object) -> bool:
 	return editor_drag_data or object is SwiftGrid
 
@@ -28,7 +12,7 @@ func _handles(object: Object) -> bool:
 func _forward_canvas_gui_input(event: InputEvent) -> bool:
 	var viewport := EditorInterface.get_editor_viewport_2d()
 
-	if event is InputEventMouseMotion and editor_drag_item_data and _find_hovered_slot(viewport):
+	if event is InputEventMouseMotion and editor_drag_item_data:
 		_show_can_drop_cursor.call_deferred()
 
 	if event is InputEventMouseButton:

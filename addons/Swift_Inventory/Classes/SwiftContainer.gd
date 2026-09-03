@@ -2,15 +2,13 @@
 @abstract
 ## Abstract base class for inventory-backed slot containers.
 ##
-## Connects a [SwiftInventory] to child [SwiftSlot] controls and dispatches inventory
-## changes to layout-specific hooks implemented by subclasses.
+## Connects a [SwiftInventory] to child [SwiftSlot] controls and reconciles their bindings
+## after inventory changes.
 class_name SwiftContainer
 extends Container
 
-
-## Inventory resource displayed by this container.
-##
-## Assigning a new resource updates the change-signal connection and resynchronizes the slots
+## Inventory resource displayed by this container. [br]
+## Assigning a new resource updates the change-signal connection and reconciles the slots
 ## once the node is ready.
 @export var swift_inventory: SwiftInventory:
 	set(value):
@@ -22,8 +20,7 @@ extends Container
 			swift_inventory.on_change.connect(_on_swift_change)
 		notify_property_list_changed()
 		if is_node_ready():
-			_sync_slots()
-			_refresh_slots()
+			_reconcile_all()
 ## Size, in pixels, assigned to each [SwiftSlot] child.
 @export_custom(PROPERTY_HINT_LINK, "suffix:px") var slot_size: Vector2i = Vector2i(16, 16):
 	set(value):
@@ -32,80 +29,61 @@ extends Container
 
 
 func _on_swift_change(change: SwiftInventory.CHANGES, from_address: int, to_address: int) -> void:
-	match change:
-		SwiftInventory.CHANGES.add:
-			_on_swift_change_add(to_address)
-		SwiftInventory.CHANGES.remove:
-			_on_swift_change_remove(from_address)
-		SwiftInventory.CHANGES.move:
-			_on_swift_change_move(from_address, to_address)
-		SwiftInventory.CHANGES.swap:
-			_on_swift_change_swap(from_address, to_address)
-		SwiftInventory.CHANGES.transfer:
-			_on_swift_change_transfer(from_address, to_address)
-		SwiftInventory.CHANGES.set:
-			_on_swift_change_set(to_address)
-		SwiftInventory.CHANGES.size:
-			_on_swift_change_size()
-		SwiftInventory.CHANGES.inventory:
-			_on_swift_change_inventory()
+	if not is_node_ready():
+		return
+	if change == SwiftInventory.CHANGES.size or change == SwiftInventory.CHANGES.inventory:
+		_reconcile_all()
+		return
+	if from_address >= 0:
+		_reconcile_address(from_address)
+	if to_address >= 0 and to_address != from_address:
+		_reconcile_address(to_address)
 
-## Called when a stack is added at [param address].
-@abstract func _on_swift_change_add(address: int) -> void
-## Called when a stack is removed from [param address].
-@abstract func _on_swift_change_remove(address: int) -> void
-## Called when a stack moves between two addresses in the same inventory.
-@abstract func _on_swift_change_move(from_address: int, to_address: int) -> void
-## Called when the stacks at two addresses are swapped.
-@abstract func _on_swift_change_swap(first_address: int, second_address: int) -> void
-## Called when a stack transfers between this container's inventory and another inventory.
-@abstract func _on_swift_change_transfer(from_address: int, to_address: int) -> void
-## Called when the stack at [param address] is replaced or cleared.
-@abstract func _on_swift_change_set(address: int) -> void
-## Called after the inventory's address capacity changes.
-@abstract func _on_swift_change_size() -> void
-## Called after the inventory dictionary is replaced.
-@abstract func _on_swift_change_inventory() -> void
 
 ## Positions the current [SwiftSlot] children according to the container's layout.
 @abstract func _sort_slots() -> void
-## Creates, removes, or rebinds [SwiftSlot] children to match [member swift_inventory].
-@abstract func _sync_slots() -> void
+## Reconciles the container's complete slot projection with [member swift_inventory].
+@abstract func _reconcile_all() -> void
+## Reconciles the slot projection for one inventory [param address].
+@abstract func _reconcile_address(address: int) -> void
 
 
 func _ready() -> void:
-	_sync_slots()
+	_reconcile_all()
 
 
-func _add_slot(index: int, pos: Vector2 = Vector2.ZERO) -> SwiftSlot:
+func _create_slot(index: int, pos: Vector2 = Vector2.ZERO) -> SwiftSlot:
 	var slot: SwiftSlot = SwiftSlot.new()
 	add_child(slot)
 	slot.setup()
 	slot.name = ("Slot_%s" % index).pad_zeros(2)
 	slot.size = slot_size
-	slot.bind(swift_inventory, index)
 	slot.position = pos - Vector2(slot_size) / 2
 	return slot
 
 
-func _remove_slot(index: int) -> void:
-	if index < 0 or index >= get_child_count():
-		return
-	var slot: SwiftSlot = get_child(index) as SwiftSlot
-	remove_child(slot)
+func _remove_slot_node(slot: SwiftSlot) -> void:
+	if slot.get_parent() == self:
+		remove_child(slot)
 	slot.queue_free()
 
 
-func _refresh_slots() -> void:
-	for index in get_child_count():
-		_refresh_slot(index)
+func _get_slot_children() -> Array[SwiftSlot]:
+	var slots: Array[SwiftSlot] = []
+	for child in get_children():
+		var slot := child as SwiftSlot
+		if slot:
+			slots.append(slot)
+	return slots
 
-func _refresh_slot(index: int) -> void:
-	if index < 0 or index >= get_child_count():
-		return
-	var slot: SwiftSlot = get_child(index) as SwiftSlot
-	if slot:
-		slot.refresh()
+
+func _get_slots_for_address(address: int) -> Array[SwiftSlot]:
+	var slots: Array[SwiftSlot] = []
+	for child in get_children():
+		var slot := child as SwiftSlot
+		if slot and slot.address == address:
+			slots.append(slot)
+	return slots
 
 
 func _notification(what: int) -> void:

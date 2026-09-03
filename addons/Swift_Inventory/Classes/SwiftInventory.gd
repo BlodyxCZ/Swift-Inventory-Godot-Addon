@@ -68,10 +68,14 @@ enum CHANGES {
 func try_add(data: SwiftItemData, quantity: int) -> int:
 	if quantity <= 0:
 		return 0
+	if not _is_valid_item_data(data):
+		return quantity
 
 	# Fill existing stacks.
 	for address in inventory:
 		var stack: SwiftItemStack = inventory[address]
+		if not _is_valid_stack(stack):
+			continue
 		if stack.item_data.id != data.id:
 			continue
 		var added: int = min(quantity, stack.get_reserve())
@@ -89,6 +93,8 @@ func try_add(data: SwiftItemData, quantity: int) -> int:
 		if address == -1:
 			return quantity
 		var added: int = min(quantity, data.max_stack_size)
+		if added <= 0:
+			return quantity
 		inventory[address] = SwiftItemStack.new(data, added)
 		quantity -= added
 		_emit_change(CHANGES.add, -1, address)
@@ -109,6 +115,8 @@ func try_remove(from_address: int, quantity: int) -> Error:
 		return FAILED
 
 	var stack: SwiftItemStack = inventory[from_address]
+	if not _is_valid_stack(stack):
+		return FAILED
 	if quantity > stack.amount:
 		return FAILED
 
@@ -136,6 +144,8 @@ func try_move(from_address: int, to_address: int, quantity: int) -> int:
 		return 0
 
 	var from_stack: SwiftItemStack = inventory[from_address]
+	if not _is_valid_stack(from_stack):
+		return quantity
 	quantity = min(quantity, from_stack.amount)
 
 	# Empty destination.
@@ -154,6 +164,8 @@ func try_move(from_address: int, to_address: int, quantity: int) -> int:
 		return 0
 
 	var to_stack: SwiftItemStack = inventory[to_address]
+	if not _is_valid_stack(to_stack):
+		return quantity
 	# Different item types cannot be stacked.
 	if from_stack.item_data.id != to_stack.item_data.id:
 		return quantity
@@ -191,9 +203,13 @@ func try_swap(
 	if not other_inventory.inventory.has(second_address):
 		return FAILED
 
-	var tmp: SwiftItemStack = inventory[first_address]
-	inventory[first_address] = other_inventory.inventory[second_address]
-	other_inventory.inventory[second_address] = tmp
+	var first_stack: SwiftItemStack = inventory[first_address]
+	var second_stack: SwiftItemStack = other_inventory.inventory[second_address]
+	if not _is_valid_stack(first_stack) or not other_inventory._is_valid_stack(second_stack):
+		return FAILED
+
+	inventory[first_address] = second_stack
+	other_inventory.inventory[second_address] = first_stack
 
 	if other_inventory == self:
 		_emit_change(CHANGES.swap, first_address, second_address)
@@ -224,6 +240,8 @@ func try_transfer(
 		return 0
 
 	var from_stack: SwiftItemStack = inventory[from_address]
+	if not _is_valid_stack(from_stack):
+		return quantity
 	quantity = mini(quantity, from_stack.amount)
 
 	# Empty destination.
@@ -242,6 +260,8 @@ func try_transfer(
 		return 0
 
 	var to_stack: SwiftItemStack = other_inventory.inventory[to_address]
+	if not other_inventory._is_valid_stack(to_stack):
+		return quantity
 	if from_stack.item_data.id != to_stack.item_data.id:
 		return quantity
 
@@ -277,6 +297,8 @@ func transfer_to(other_inventory: SwiftInventory) -> Error:
 			continue
 
 		var stack: SwiftItemStack = inventory[address]
+		if not _is_valid_stack(stack):
+			continue
 		var original_amount := stack.amount
 		var remaining := other_inventory.try_add(stack.item_data, original_amount)
 		var transferred := original_amount - remaining
@@ -330,6 +352,8 @@ func set_stack_from_data(address: int, data: SwiftItemData, quantity: int = 1) -
 			inventory.erase(address)
 			_emit_change(CHANGES.set, -1, address)
 		return OK
+	if not _is_valid_item_data(data):
+		return FAILED
 
 	quantity = mini(quantity, data.max_stack_size)
 	inventory[address] = SwiftItemStack.new(data, quantity)
@@ -351,11 +375,14 @@ func _is_valid_address(address: int) -> bool:
 	return address >= 0 and address < size
 
 
+func _is_valid_item_data(data: SwiftItemData) -> bool:
+	return data != null and data.max_stack_size > 0
+
+
 func _is_valid_stack(stack: SwiftItemStack) -> bool:
 	return (
 		stack != null
-		and stack.item_data != null
-		and stack.item_data.max_stack_size > 0
+		and _is_valid_item_data(stack.item_data)
 		and stack.amount > 0
 		and stack.amount <= stack.item_data.max_stack_size
 	)
@@ -363,6 +390,7 @@ func _is_valid_stack(stack: SwiftItemStack) -> bool:
 
 func _get_first_empty_address() -> int:
 	for address in range(size):
-		if not inventory.has(address):
+		var stack: SwiftItemStack = inventory.get(address)
+		if not _is_valid_stack(stack):
 			return address
 	return -1

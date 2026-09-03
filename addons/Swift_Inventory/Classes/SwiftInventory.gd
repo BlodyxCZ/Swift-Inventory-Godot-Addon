@@ -293,12 +293,26 @@ func transfer_to(other_inventory: SwiftInventory) -> Error:
 	return OK
 
 
-## Stores an existing [param stack] resource at [param address].
+## Stores or clears an existing [param stack] resource at [param address].
 ##
-## The stack is assigned directly without address validation or a change signal. Use
-## [method set_stack_from_data] when callers need validation and observer notification.
+## Passing [code]null[/code] clears the address. Non-null stacks must contain item data and a
+## positive amount that does not exceed the item's maximum stack size. Returns
+## [constant @GlobalScope.FAILED] when the address or stack is invalid.
 func set_stack(address: int, stack: SwiftItemStack) -> Error:
+	if not _is_valid_address(address):
+		return FAILED
+
+	if stack == null:
+		if inventory.has(address):
+			inventory.erase(address)
+			_emit_change(CHANGES.set, -1, address)
+		return OK
+
+	if not _is_valid_stack(stack):
+		return FAILED
+
 	inventory[address] = stack
+	_emit_change(CHANGES.set, -1, address)
 	return OK
 
 
@@ -335,6 +349,16 @@ func _emit_change(type: CHANGES, from_address: int, to_address: int) -> void:
 
 func _is_valid_address(address: int) -> bool:
 	return address >= 0 and address < size
+
+
+func _is_valid_stack(stack: SwiftItemStack) -> bool:
+	return (
+		stack != null
+		and stack.item_data != null
+		and stack.item_data.max_stack_size > 0
+		and stack.amount > 0
+		and stack.amount <= stack.item_data.max_stack_size
+	)
 
 
 func _get_first_empty_address() -> int:

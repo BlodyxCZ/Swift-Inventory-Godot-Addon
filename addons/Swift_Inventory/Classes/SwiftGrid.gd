@@ -71,26 +71,25 @@ func _on_swift_change_inventory() -> void:
 
 
 func _sync_slots() -> void:
-	while get_child_count() > inventory_size:
-		_remove_slot(-1)
-	while get_child_count() < inventory_size:
-		_add_slot(get_child_count())
-	for index in get_child_count():
-		var slot := get_child(index) as SwiftSlot
-		if slot:
-			slot.setup()
-			slot.bind(swift_inventory, index)
+	var slots := _get_slot_children()
+	while slots.size() > inventory_size:
+		_remove_slot(slots.size() - 1)
+		slots.pop_back()
+	while slots.size() < inventory_size:
+		slots.append(_add_slot(slots.size()))
+	for index in slots.size():
+		var slot := slots[index]
+		slot.setup()
+		slot.bind(swift_inventory, index)
 	queue_sort()
 
 
 func _sort_slots() -> void:
 	var columns := maxi(1, floori((size.x + separation.x) / (slot_size.x + separation.x)))
+	var slots := _get_slot_children()
 
-	for i in get_child_count():
-		var slot := get_child(i) as SwiftSlot
-		if not slot:
-			continue
-
+	for i in slots.size():
+		var slot := slots[i]
 		var column := i % columns
 		var row := i / columns
 		var slot_position := Vector2(

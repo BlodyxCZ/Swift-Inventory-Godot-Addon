@@ -89,23 +89,32 @@ func _add_slot(index: int, pos: Vector2 = Vector2.ZERO) -> SwiftSlot:
 
 
 func _remove_slot(index: int) -> void:
-	if index < 0 or index >= get_child_count():
+	var slots := _get_slot_children()
+	if index < 0 or index >= slots.size():
 		return
-	var slot: SwiftSlot = get_child(index) as SwiftSlot
+	var slot := slots[index]
 	remove_child(slot)
 	slot.queue_free()
 
 
+func _get_slot_children() -> Array[SwiftSlot]:
+	var slots: Array[SwiftSlot] = []
+	for child in get_children():
+		var slot := child as SwiftSlot
+		if slot:
+			slots.append(slot)
+	return slots
+
+
 func _refresh_slots() -> void:
-	for index in get_child_count():
-		_refresh_slot(index)
+	for slot in _get_slot_children():
+		slot.refresh()
 
 func _refresh_slot(index: int) -> void:
-	if index < 0 or index >= get_child_count():
+	var slots := _get_slot_children()
+	if index < 0 or index >= slots.size():
 		return
-	var slot: SwiftSlot = get_child(index) as SwiftSlot
-	if slot:
-		slot.refresh()
+	slots[index].refresh()
 
 
 func _notification(what: int) -> void:

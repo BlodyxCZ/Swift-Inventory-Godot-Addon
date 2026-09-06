@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="SwiftInventory" format=3 uid="uid://dtwuywatdmtxm"]
+
+[ext_resource type="Script" uid="uid://8xv7tupboav2" path="res://addons/Swift_Inventory/Classes/SwiftItemStack.gd" id="1_el353"]
+[ext_resource type="Resource" uid="uid://ckdshb04wcb7" path="res://addons/Swift_Inventory/Example/ItemsData/potion_data.tres" id="3_825lh"]
+[ext_resource type="Script" uid="uid://n72h5cs3yd3b" path="res://addons/Swift_Inventory/Classes/SwiftRule.gd" id="4_7su35"]
+[ext_resource type="Script" uid="uid://ddpogvrv0ol54" path="res://addons/Swift_Inventory/Classes/SwiftInventory.gd" id="5_7d0c7"]
+
+[sub_resource type="Resource" id="Resource_q61ro"]
+script = ExtResource("1_el353")
+item_data = ExtResource("3_825lh")
+amount = 5
+
+[resource]
+script = ExtResource("5_7d0c7")
+size = 18
+inventory = Dictionary[int, ExtResource("1_el353")]({
+2: SubResource("Resource_q61ro")
+})
+metadata/_custom_type_script = "uid://ddpogvrv0ol54"

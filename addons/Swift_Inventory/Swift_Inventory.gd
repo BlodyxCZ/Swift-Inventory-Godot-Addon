@@ -6,7 +6,7 @@ var editor_drag_item_data: SwiftItemData
 
 
 func _handles(object: Object) -> bool:
-	return editor_drag_data or object is SwiftGrid
+	return editor_drag_item_data != null or object is SwiftContainer
 
 
 func _forward_canvas_gui_input(event: InputEvent) -> bool:
@@ -43,16 +43,8 @@ func _notification(what: int) -> void:
 				var viewport := EditorInterface.get_editor_viewport_2d()
 				var slot := _find_hovered_slot(viewport)
 
-				if slot:
-					var files: PackedStringArray = editor_drag_data["files"]
-
-					for file in files:
-						if file.get_extension() != "tres":
-							continue
-
-						var data := load(file)
-						if data is SwiftItemData:
-							slot.item_data = data
+				if slot and editor_drag_item_data:
+					_apply_item_drop(slot, editor_drag_item_data)
 
 			editor_drag_data = null
 			editor_drag_item_data = null
@@ -83,17 +75,55 @@ func _show_can_drop_cursor() -> void:
 		return
 
 	var viewport := EditorInterface.get_editor_viewport_2d()
-	if _find_hovered_slot(viewport):
+	var slot := _find_hovered_slot(viewport)
+	if slot and _can_drop_item(slot, editor_drag_item_data):
 		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_CAN_DROP)
+	elif slot:
+		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FORBIDDEN)
 
 
 func _find_hovered_slot(viewport: Viewport) -> SwiftSlot:
 	var mouse: Vector2 = viewport.get_mouse_position()
 
-	for node: SwiftSlot in get_tree().get_nodes_in_group("_swift_editor_selectable"):
-		var local_pos: Transform2D = node.get_global_transform().affine_inverse()
-
-		if Rect2(local_pos.origin * -1, node.size).has_point(mouse):
+	var slots := get_tree().get_nodes_in_group("_swift_editor_selectable")
+	slots.reverse()
+	for node: SwiftSlot in slots:
+		if _slot_contains_point(node, mouse):
 			return node
 
 	return null
+
+
+func _slot_contains_point(slot: SwiftSlot, viewport_point: Vector2) -> bool:
+	if not slot.is_visible_in_tree():
+		return false
+	var local := slot.get_global_transform_with_canvas().affine_inverse() * viewport_point
+	return Rect2(Vector2.ZERO, slot.size).has_point(local)
+
+
+func _can_drop_item(slot: SwiftSlot, data: SwiftItemData) -> bool:
+	if slot.swift_inventory == null or data == null:
+		return false
+	var quantity := mini(slot.amount if slot.item else 1, data.max_stack_size)
+	return slot.swift_inventory.can_set_stack(slot.address, SwiftItemStack.new(data, quantity))
+
+
+func _apply_item_drop(slot: SwiftSlot, data: SwiftItemData) -> void:
+	if not _can_drop_item(slot, data):
+		return
+	var inv := slot.swift_inventory
+	var before := inv.inventory.duplicate()
+	var after := before.duplicate()
+	after[slot.address] = SwiftItemStack.new(
+		data, mini(slot.amount if slot.item else 1, data.max_stack_size)
+	)
+	var undo := get_undo_redo()
+	undo.create_action("Set Swift Inventory item", UndoRedo.MERGE_DISABLE, inv)
+	undo.add_do_property(inv, "inventory", after)
+	undo.add_undo_property(inv, "inventory", before)
+	undo.commit_action()
+
+
+func _exit_tree() -> void:
+	editor_drag_data = null
+	editor_drag_item_data = null

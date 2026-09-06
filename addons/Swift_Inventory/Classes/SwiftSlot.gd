@@ -33,7 +33,13 @@ signal refreshed
 			return
 		if not swift_inventory or not item:
 			return
-		swift_inventory.set_stack_from_data(address, item.item_data, value)
+		var replacement := item.copy(mini(value, item.item_data.max_stack_size))
+		if value <= 0:
+			swift_inventory.set_stack(address, null)
+		elif value < item.amount:
+			swift_inventory.try_remove(address, item.amount - value)
+		else:
+			swift_inventory.set_stack(address, replacement)
 	get:
 		return item.amount if item else 0
 
@@ -60,6 +66,13 @@ var item: SwiftItemStack:
 var texture_rect: TextureRect
 ## Label used to display [member amount].
 var amount_label: Label
+## Presentation flags used by SwiftHotbar and drag target feedback.
+var selected: bool = false:
+	set(value):
+		selected = value
+		queue_redraw()
+var selection_color: Color = Color(1.0, 0.78, 0.25)
+var _drop_feedback: int = 0
 
 
 ## Initializes the slot to expand and fill the space assigned by its parent container.
@@ -70,8 +83,12 @@ func _init() -> void:
 
 ## Binds the slot to [param slot_address] in [param inventory] and refreshes its presentation.
 func bind(inventory: SwiftInventory, slot_address: int) -> void:
+	if swift_inventory and swift_inventory.on_change.is_connected(_on_inventory_change):
+		swift_inventory.on_change.disconnect(_on_inventory_change)
 	swift_inventory = inventory
 	address = slot_address
+	if swift_inventory and not get_parent() is SwiftContainer:
+		swift_inventory.on_change.connect(_on_inventory_change)
 	refresh()
 
 
@@ -128,47 +145,50 @@ func _validate_property(property: Dictionary) -> void:
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:
-	if not item:
+	if Engine.is_editor_hint() or not item:
 		return null
-	set_drag_preview(_get_preview(item))
-	return {
-		"inventory": swift_inventory,
-		"address": address,
-		"quantity": item.amount,
-	}
+	var quantity := SwiftDrag.initial_quantity(
+		item.amount, Input.is_key_pressed(KEY_SHIFT), Input.is_key_pressed(KEY_CTRL)
+	)
+	var payload := SwiftDrag.create_payload(swift_inventory, address, quantity)
+	var preview := SwiftDragPreview.new()
+	preview.setup(payload, size)
+	set_drag_preview(preview)
+	return payload
 
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	if Engine.is_editor_hint():
 		return data is Dictionary and data.has("files")
 
-	return (
-		data is Dictionary
-		and data.get("inventory") is SwiftInventory
-		and data.has("address")
-		and data.has("quantity")
-	)
+	var allowed := SwiftDrag.can_drop(data, swift_inventory, address)
+	_drop_feedback = 1 if allowed else -1
+	queue_redraw()
+	return allowed
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
-	var from_inventory := data["inventory"] as SwiftInventory
-	var from_address: int = data["address"]
-	var quantity: int = data["quantity"]
+	SwiftDrag.drop(data, swift_inventory, address)
+	_drop_feedback = 0
+	queue_redraw()
 
-	if from_inventory == swift_inventory and from_address == address:
-		return
 
-	var from_stack := from_inventory.get_stack(from_address)
-	var to_stack := swift_inventory.get_stack(address)
-	if not from_stack:
-		return
+func _on_inventory_change(_type: SwiftInventory.CHANGES, _from: int, _to: int) -> void:
+	refresh()
 
-	# Different items -> swap.
-	if to_stack and not from_stack.can_stack_with(to_stack):
-		from_inventory.try_swap(from_address, address, swift_inventory)
-		return
 
-	from_inventory.try_transfer(from_address, swift_inventory, address, quantity)
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_MOUSE_EXIT or what == NOTIFICATION_DRAG_END:
+		_drop_feedback = 0
+		queue_redraw()
+
+
+func _draw() -> void:
+	if selected:
+		draw_rect(Rect2(Vector2.ONE, size - Vector2(2, 2)), selection_color, false, 2.0)
+	if _drop_feedback != 0:
+		var color := Color(0.3, 1.0, 0.5) if _drop_feedback > 0 else Color(1.0, 0.3, 0.3)
+		draw_rect(Rect2(Vector2(3, 3), size - Vector2(6, 6)), color, false, 2.0)
 
 
 func _get_preview(item: SwiftItemStack) -> Control:

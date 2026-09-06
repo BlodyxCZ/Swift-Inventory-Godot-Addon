@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SwiftItemData" format=3 uid="uid://ckdshb04wcb7"]
+
+[ext_resource type="Texture2D" uid="uid://bntbqe0lhdhe2" path="res://addons/Swift_Inventory/Example/Icons/potion.svg" id="1_kg75x"]
+[ext_resource type="Script" uid="uid://cq5053m8y7vf1" path="res://addons/Swift_Inventory/Classes/SwiftItemData.gd" id="1_wavb4"]
+
+[resource]
+script = ExtResource("1_wavb4")
+id = &"Potion"
+display_name = "Potion"
+description = "It's a Potion."
+icon = ExtResource("1_kg75x")
+max_stack_size = 8
+metadata/_custom_type_script = "uid://cq5053m8y7vf1"

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SwiftItemData" format=3 uid="uid://cljvbhuhr2yy6"]
+
+[ext_resource type="Script" uid="uid://cq5053m8y7vf1" path="res://addons/Swift_Inventory/Classes/SwiftItemData.gd" id="1_28bjh"]
+[ext_resource type="Texture2D" uid="uid://b0jgeqvnikrg" path="res://addons/Swift_Inventory/Example/Icons/crystal.svg" id="1_tli8a"]
+
+[resource]
+script = ExtResource("1_28bjh")
+id = &"Crystal"
+display_name = "Crystal"
+description = "It's a Crystal."
+icon = ExtResource("1_tli8a")
+max_stack_size = 10
+metadata/_custom_type_script = "uid://cq5053m8y7vf1"

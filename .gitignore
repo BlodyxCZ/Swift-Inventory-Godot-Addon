@@ -12,6 +12,8 @@ export_credentials.cfg
 
 # Temporary files
 *.tmp
+tests/
+docs/
 
 # Imported translations (automatically generated from CSV files)
 *.translation

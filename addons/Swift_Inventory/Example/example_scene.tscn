@@ -3,54 +3,49 @@
 [ext_resource type="Script" uid="uid://ct5e5bb1c06p0" path="res://addons/Swift_Inventory/Classes/SwiftDropArea.gd" id="1_6umnx"]
 [ext_resource type="Script" uid="uid://dnp6muoj3e72d" path="res://addons/Swift_Inventory/Classes/SwiftGrid.gd" id="1_gswx4"]
 [ext_resource type="Script" uid="uid://8xv7tupboav2" path="res://addons/Swift_Inventory/Classes/SwiftItemStack.gd" id="2_6umnx"]
-[ext_resource type="Resource" uid="uid://byb0hj5t6souk" path="res://addons/Swift_Inventory/Example/sword_data.tres" id="3_wpwti"]
+[ext_resource type="Resource" uid="uid://byb0hj5t6souk" path="res://addons/Swift_Inventory/Example/ItemsData/sword_data.tres" id="3_wpwti"]
 [ext_resource type="Script" uid="uid://ddpogvrv0ol54" path="res://addons/Swift_Inventory/Classes/SwiftInventory.gd" id="4_63s4f"]
-[ext_resource type="Resource" uid="uid://dtwuywatdmtxm" path="res://addons/Swift_Inventory/Example/player_inventory.tres" id="6_wpwti"]
-[ext_resource type="Script" uid="uid://bxikxeqm4i4e3" path="res://addons/Swift_Inventory/Example/example_info_panel.gd" id="7_6umnx"]
+[ext_resource type="Resource" uid="uid://cljvbhuhr2yy6" path="res://addons/Swift_Inventory/Example/ItemsData/crystal_data.tres" id="4_drrfe"]
+[ext_resource type="Script" uid="uid://n72h5cs3yd3b" path="res://addons/Swift_Inventory/Classes/SwiftRule.gd" id="4_txi3l"]
+[ext_resource type="Resource" uid="uid://ckdshb04wcb7" path="res://addons/Swift_Inventory/Example/ItemsData/potion_data.tres" id="5_8wodt"]
+[ext_resource type="Resource" uid="uid://dtwuywatdmtxm" path="res://addons/Swift_Inventory/Example/Inventories/player_inventory.tres" id="6_wpwti"]
+[ext_resource type="Script" uid="uid://bxikxeqm4i4e3" path="res://addons/Swift_Inventory/Example/Scripts/example_info_panel.gd" id="7_6umnx"]
 [ext_resource type="Script" uid="uid://d23wkaooq0n8c" path="res://addons/Swift_Inventory/Classes/SwiftInfo.gd" id="7_wpwti"]
-[ext_resource type="Resource" uid="uid://wao11fbqyqwb" path="res://addons/Swift_Inventory/Example/drop_inventory.tres" id="9_nih2c"]
+[ext_resource type="Resource" uid="uid://wao11fbqyqwb" path="res://addons/Swift_Inventory/Example/Inventories/drop_inventory.tres" id="9_nih2c"]
+[ext_resource type="Resource" uid="uid://b3xo1gesvo8gj" path="res://addons/Swift_Inventory/Example/Inventories/player_equipment.tres" id="10_gjult"]
+[ext_resource type="Resource" uid="uid://bcep8j4mlp35m" path="res://addons/Swift_Inventory/Example/Inventories/enchant_inventory.tres" id="15_ap8bg"]
+[ext_resource type="Script" uid="uid://cspbl83is6ax4" path="res://addons/Swift_Inventory/Example/Scripts/enchanting.gd" id="15_d8rl0"]
+[ext_resource type="Script" uid="uid://dhy6gv7gqku00" path="res://addons/Swift_Inventory/Classes/SwiftHotbar.gd" id="hotbar"]
 
 [sub_resource type="Resource" id="Resource_6umnx"]
 script = ExtResource("2_6umnx")
 item_data = ExtResource("3_wpwti")
 amount = 1
-instance_data = null
 
 [sub_resource type="Resource" id="Resource_drrfe"]
 script = ExtResource("2_6umnx")
 item_data = ExtResource("3_wpwti")
 amount = 1
-instance_data = null
 
-[sub_resource type="Resource" id="Resource_wpwti"]
+[sub_resource type="Resource" id="Resource_pb7lq"]
+script = ExtResource("2_6umnx")
+item_data = ExtResource("5_8wodt")
+amount = 8
+
+[sub_resource type="Resource" id="Resource_ap8bg"]
 script = ExtResource("2_6umnx")
 item_data = ExtResource("3_wpwti")
 amount = 1
-instance_data = null
 
-[sub_resource type="Resource" id="Resource_8wodt"]
+[sub_resource type="Resource" id="Resource_d8rl0"]
 script = ExtResource("2_6umnx")
-item_data = ExtResource("3_wpwti")
-amount = 1
-instance_data = null
-
-[sub_resource type="Resource" id="Resource_nih2c"]
-script = ExtResource("2_6umnx")
-item_data = ExtResource("3_wpwti")
-amount = 1
-instance_data = null
-
-[sub_resource type="Resource" id="Resource_63s4f"]
-script = ExtResource("2_6umnx")
-item_data = ExtResource("3_wpwti")
-amount = 1
-instance_data = null
+item_data = ExtResource("4_drrfe")
+amount = 10
 
 [sub_resource type="Resource" id="Resource_gjult"]
 script = ExtResource("2_6umnx")
 item_data = ExtResource("3_wpwti")
 amount = 1
-instance_data = null
 
 [sub_resource type="Resource" id="Resource_txi3l"]
 script = ExtResource("4_63s4f")
@@ -58,12 +53,16 @@ size = 40
 inventory = Dictionary[int, ExtResource("2_6umnx")]({
 0: SubResource("Resource_6umnx"),
 5: SubResource("Resource_drrfe"),
-13: SubResource("Resource_wpwti"),
-14: SubResource("Resource_8wodt"),
-17: SubResource("Resource_nih2c"),
-35: SubResource("Resource_63s4f"),
+15: SubResource("Resource_pb7lq"),
+21: SubResource("Resource_ap8bg"),
+32: SubResource("Resource_d8rl0"),
 38: SubResource("Resource_gjult")
 })
+metadata/_custom_type_script = "uid://ddpogvrv0ol54"
+
+[sub_resource type="Resource" id="Resource_egemx"]
+script = ExtResource("4_63s4f")
+size = 4
 metadata/_custom_type_script = "uid://ddpogvrv0ol54"
 
 [node name="ExampleScene" type="Control" unique_id=1552255554]
@@ -74,32 +73,31 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Chest" type="VBoxContainer" parent="." unique_id=1238556323]
+[node name="ChestInventory" type="VBoxContainer" parent="." unique_id=1238556323]
 layout_mode = 0
-offset_left = 227.0
-offset_top = 23.0
-offset_right = 923.0
-offset_bottom = 338.0
+offset_left = 10.0
+offset_top = 33.0
+offset_right = 706.0
+offset_bottom = 348.0
 
-[node name="Label" type="Label" parent="Chest" unique_id=575767647]
+[node name="Label" type="Label" parent="ChestInventory" unique_id=575767647]
 layout_mode = 2
 text = "Chest Inventory"
 horizontal_alignment = 1
 
-[node name="Panel" type="Panel" parent="Chest" unique_id=1445421544]
+[node name="PanelContainer" type="PanelContainer" parent="ChestInventory" unique_id=381941578]
 custom_minimum_size = Vector2(696, 288)
 layout_mode = 2
 
-[node name="CenterContainer" type="CenterContainer" parent="Chest/Panel" unique_id=2034653656]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MarginContainer" type="MarginContainer" parent="ChestInventory/PanelContainer" unique_id=826997390]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
 
-[node name="Chest_SwiftGrid" type="Container" parent="Chest/Panel/CenterContainer" unique_id=95560836]
-custom_minimum_size = Vector2(676, 268)
+[node name="Chest_SwiftGrid" type="Container" parent="ChestInventory/PanelContainer/MarginContainer" unique_id=95560836]
+custom_minimum_size = Vector2(64, 268)
 layout_mode = 2
 script = ExtResource("1_gswx4")
 inventory_size = 40
@@ -107,33 +105,33 @@ swift_inventory = SubResource("Resource_txi3l")
 slot_size = Vector2i(64, 64)
 metadata/_custom_type_script = "uid://dnp6muoj3e72d"
 
-[node name="Player" type="VBoxContainer" parent="." unique_id=713867381]
+[node name="PlayerInventory" type="VBoxContainer" parent="." unique_id=713867381]
 layout_mode = 0
-offset_left = 567.0
-offset_top = 364.0
-offset_right = 991.0
-offset_bottom = 611.0
+offset_left = 715.0
+offset_top = 32.0
+offset_right = 1139.0
+offset_bottom = 279.0
+size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="Player" unique_id=529326589]
+[node name="Label" type="Label" parent="PlayerInventory" unique_id=529326589]
 layout_mode = 2
 text = "Player Inventory"
 horizontal_alignment = 1
 
-[node name="Panel" type="Panel" parent="Player" unique_id=1035237723]
+[node name="PanelContainer" type="PanelContainer" parent="PlayerInventory" unique_id=1046541245]
 custom_minimum_size = Vector2(424, 220)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CenterContainer" type="CenterContainer" parent="Player/Panel" unique_id=1996702885]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MarginContainer" type="MarginContainer" parent="PlayerInventory/PanelContainer" unique_id=1051839577]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
 
-[node name="Player_SwiftGrid" type="Container" parent="Player/Panel/CenterContainer" unique_id=419556035]
-custom_minimum_size = Vector2(404, 200)
+[node name="SwiftGrid" type="Container" parent="PlayerInventory/PanelContainer/MarginContainer" unique_id=419556035]
+custom_minimum_size = Vector2(64, 200)
 layout_mode = 2
 script = ExtResource("1_gswx4")
 inventory_size = 18
@@ -141,12 +139,113 @@ swift_inventory = ExtResource("6_wpwti")
 slot_size = Vector2i(64, 64)
 metadata/_custom_type_script = "uid://dnp6muoj3e72d"
 
+[node name="PlayerHotbar" type="VBoxContainer" parent="." unique_id=1866165017]
+layout_mode = 0
+offset_left = 717.0
+offset_top = 285.0
+offset_right = 1137.0
+offset_bottom = 392.0
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="PlayerHotbar" unique_id=1237746224]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Player Hotbar"
+horizontal_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="PlayerHotbar" unique_id=2108591528]
+layout_mode = 2
+size_flags_horizontal = 17
+size_flags_vertical = 19
+
+[node name="MarginContainer" type="MarginContainer" parent="PlayerHotbar/PanelContainer" unique_id=2131793939]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="SwiftHotbar" type="Container" parent="PlayerHotbar/PanelContainer/MarginContainer" unique_id=1264197062]
+custom_minimum_size = Vector2(404, 64)
+layout_mode = 2
+script = ExtResource("hotbar")
+slot_count = 6
+selected_index = 1
+swift_inventory = ExtResource("6_wpwti")
+slot_size = Vector2i(64, 64)
+metadata/_custom_type_script = "uid://dhy6gv7gqku00"
+
+[node name="PlayerEquipment" type="VBoxContainer" parent="." unique_id=2115366042]
+layout_mode = 0
+offset_left = 838.0
+offset_top = 404.0
+offset_right = 1134.0
+offset_bottom = 538.0
+
+[node name="Label" type="Label" parent="PlayerEquipment" unique_id=1387930589]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Player Equipment"
+horizontal_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="PlayerEquipment" unique_id=720863692]
+layout_mode = 2
+size_flags_horizontal = 17
+size_flags_vertical = 19
+
+[node name="MarginContainer" type="MarginContainer" parent="PlayerEquipment/PanelContainer" unique_id=1515883922]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PlayerEquipment/PanelContainer/MarginContainer" unique_id=350717525]
+layout_mode = 2
+size_flags_horizontal = 17
+size_flags_vertical = 17
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PlayerEquipment/PanelContainer/MarginContainer/VBoxContainer" unique_id=1173999700]
+layout_mode = 2
+size_flags_horizontal = 17
+size_flags_vertical = 19
+theme_override_constants/separation = 56
+alignment = 1
+
+[node name="Label" type="Label" parent="PlayerEquipment/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=650608886]
+layout_mode = 2
+text = "Sword"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="PlayerEquipment/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=105128531]
+layout_mode = 2
+text = "Potion"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label3" type="Label" parent="PlayerEquipment/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1587053739]
+layout_mode = 2
+text = "Crystal"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SwiftGrid" type="Container" parent="PlayerEquipment/PanelContainer/MarginContainer/VBoxContainer" unique_id=1565448050]
+custom_minimum_size = Vector2(264, 64)
+layout_mode = 2
+script = ExtResource("1_gswx4")
+inventory_size = 3
+separation = Vector2i(44, 44)
+swift_inventory = ExtResource("10_gjult")
+slot_size = Vector2i(64, 64)
+metadata/_custom_type_script = "uid://dnp6muoj3e72d"
+
 [node name="DropArea" type="VBoxContainer" parent="." unique_id=1927104511]
 layout_mode = 0
-offset_left = 159.0
-offset_top = 362.0
-offset_right = 492.0
-offset_bottom = 609.0
+offset_left = 37.0
+offset_top = 370.0
+offset_right = 370.0
+offset_bottom = 617.0
 
 [node name="Label" type="Label" parent="DropArea" unique_id=1904685971]
 layout_mode = 2
@@ -169,6 +268,40 @@ script = ExtResource("1_6umnx")
 swift_inventory = ExtResource("9_nih2c")
 slot_size = Vector2i(64, 64)
 metadata/_custom_type_script = "uid://ct5e5bb1c06p0"
+
+[node name="PersistentInventory" type="VBoxContainer" parent="." unique_id=235655738]
+layout_mode = 0
+offset_left = 398.0
+offset_top = 366.0
+offset_right = 682.0
+offset_bottom = 473.0
+
+[node name="Label" type="Label" parent="PersistentInventory" unique_id=1317257316]
+layout_mode = 2
+text = "Persistent Inventory"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="PersistentInventory" unique_id=1206598923]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="PersistentInventory/PanelContainer" unique_id=409712759]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="SwiftGrid" type="Container" parent="PersistentInventory/PanelContainer/MarginContainer" unique_id=251434522]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+script = ExtResource("1_gswx4")
+inventory_size = 4
+swift_inventory = SubResource("Resource_egemx")
+slot_size = Vector2i(64, 64)
+auto_persist = true
+save_path = "user://saves/persistent.tres"
+metadata/_custom_type_script = "uid://dnp6muoj3e72d"
 
 [node name="SwiftInfo" type="Control" parent="." unique_id=1574952974]
 z_index = 1
@@ -199,4 +332,54 @@ layout_mode = 2
 size_flags_vertical = 3
 horizontal_alignment = 1
 
+[node name="HSeparator2" type="HSeparator" parent="SwiftInfo/PanelContainer/VBoxContainer" unique_id=658678072]
+layout_mode = 2
+
+[node name="Label3" type="Label" parent="SwiftInfo/PanelContainer/VBoxContainer" unique_id=561785425]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_alignment = 1
+
+[node name="EnchantInventory" type="VBoxContainer" parent="." unique_id=136640791 node_paths=PackedStringArray("enchanting_grid")]
+layout_mode = 0
+offset_left = 714.0
+offset_top = 404.0
+offset_right = 802.0
+offset_bottom = 546.0
+script = ExtResource("15_d8rl0")
+enchanting_grid = NodePath("PanelContainer/CenterContainer/MarginContainer/SwiftGrid")
+
+[node name="Label" type="Label" parent="EnchantInventory" unique_id=975955333]
+layout_mode = 2
+text = "Enchanting"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="EnchantInventory" unique_id=276082461]
+layout_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="EnchantInventory/PanelContainer" unique_id=656056835]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="EnchantInventory/PanelContainer/CenterContainer" unique_id=1283774637]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="SwiftGrid" type="Container" parent="EnchantInventory/PanelContainer/CenterContainer/MarginContainer" unique_id=2095746364]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+script = ExtResource("1_gswx4")
+inventory_size = 1
+swift_inventory = ExtResource("15_ap8bg")
+slot_size = Vector2i(64, 64)
+metadata/_custom_type_script = "uid://dnp6muoj3e72d"
+
+[node name="Button" type="Button" parent="EnchantInventory" unique_id=371251330]
+layout_mode = 2
+text = "Enchant!"
+
 [connection signal="on_info_changed" from="SwiftInfo" to="SwiftInfo/PanelContainer" method="_on_swift_info_on_info_changed"]
+[connection signal="pressed" from="EnchantInventory/Button" to="EnchantInventory" method="_on_button_pressed"]

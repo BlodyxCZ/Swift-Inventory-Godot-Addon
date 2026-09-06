@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.2.0 - 04/09/2026
+## v2.2.0 - 06/09/2026
 
 ### Added
 
@@ -8,11 +8,15 @@
   enchantments.
 - Added `SwiftItemStack.can_stack_with()` for item-ID and instance-data compatibility checks.
 - Added validated `SwiftInventory.has_stack()` and `SwiftInventory.get_stack()` query methods.
+- Added `SwiftContainer.auto_persist` and `save_path` for runtime inventory loading on startup,
+  batched autosaving after changes, and a final save on scene exit. Available on grids, hotbars,
+  and drop areas; disabled in editor previews. Duplicate writers and failed-load overwrites
+  are rejected, with completion and failure signals for gameplay integration.
 
 ### Changed
 
 - Replaced overlapping container-level refresh and synchronization hooks with one full/address
-  reconciliation contract; `SwiftSlot.refresh()` now exclusively updates slot presentation.
+  reconciliation contract. `SwiftSlot.refresh()` now exclusively updates slot presentation.
 - Updated `SwiftInventory.set_stack()` to validate addresses and stack invariants, support clearing
   with `null`, and emit address-specific change notifications.
 - Updated stack merging to require matching item IDs and matching `instance_data`.
@@ -33,6 +37,7 @@
 ### Documentation
 
 - Added the browser-playable example scene link and documented stack-specific metadata behavior.
+- Clarified how `SwiftHotbar.selection_actions` maps Input Map names to visible slots.
 
 ### Development
 

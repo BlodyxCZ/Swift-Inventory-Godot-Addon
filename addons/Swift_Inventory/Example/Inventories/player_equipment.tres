@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="SwiftInventory" format=3 uid="uid://b3xo1gesvo8gj"]
+
+[ext_resource type="Script" uid="uid://8xv7tupboav2" path="res://addons/Swift_Inventory/Classes/SwiftItemStack.gd" id="1_s3yeu"]
+[ext_resource type="Script" uid="uid://n72h5cs3yd3b" path="res://addons/Swift_Inventory/Classes/SwiftRule.gd" id="2_g13u0"]
+[ext_resource type="Script" uid="uid://ddpogvrv0ol54" path="res://addons/Swift_Inventory/Classes/SwiftInventory.gd" id="3_dfacs"]
+
+[sub_resource type="Resource" id="Resource_l2l6m"]
+script = ExtResource("2_g13u0")
+allowed_ids = Array[StringName]([&"Sword"])
+metadata/_custom_type_script = "uid://n72h5cs3yd3b"
+
+[sub_resource type="Resource" id="Resource_6as8o"]
+script = ExtResource("2_g13u0")
+allowed_ids = Array[StringName]([&"Potion"])
+metadata/_custom_type_script = "uid://n72h5cs3yd3b"
+
+[sub_resource type="Resource" id="Resource_y4iq1"]
+script = ExtResource("2_g13u0")
+allowed_ids = Array[StringName]([&"Crystal"])
+metadata/_custom_type_script = "uid://n72h5cs3yd3b"
+
+[resource]
+script = ExtResource("3_dfacs")
+size = 3
+slot_rules = Dictionary[int, ExtResource("2_g13u0")]({
+0: SubResource("Resource_l2l6m"),
+1: SubResource("Resource_6as8o"),
+2: SubResource("Resource_y4iq1")
+})
+metadata/_custom_type_script = "uid://ddpogvrv0ol54"

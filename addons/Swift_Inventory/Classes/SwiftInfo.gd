@@ -1,48 +1,65 @@
 @icon("res://addons/Swift_Inventory/Icons/SwiftInfo.svg")
-## Floating information panel for the [SwiftItemStack] under the mouse pointer.
-##
-## The control follows the mouse, becomes visible while a [SwiftSlot] containing an item is
-## hovered, and ignores mouse input throughout its child hierarchy.
+## Pointer-following information panel, refreshed when the hovered slot's contents change.
 class_name SwiftInfo
 extends Control
 
-## Emitted when [member hovered_item] changes.
 signal on_info_changed(new_item: SwiftItemStack)
 
-## Pixel offset applied to the panel relative to the mouse position.
+## Existing misspelled property retained for scene and API compatibility.
 @export_custom(PROPERTY_HINT_LINK, "suffix:px") var position_offest: Vector2 = Vector2.ZERO
-## Slot currently detected under the mouse pointer, or [code]null[/code] when none is hovered.
+## Correctly spelled runtime alias.
+var position_offset: Vector2:
+	get: return position_offest
+	set(value): position_offest = value
+
 var hovered_slot: SwiftSlot:
 	set(value):
-		# TODO: Fix bug where info hides after dropping dragged items.
-		if hovered_slot == value:
+		if is_instance_valid(hovered_slot) and hovered_slot == value:
+			_sync_item()
 			return
+		if (
+			is_instance_valid(hovered_slot)
+			and hovered_slot.refreshed.is_connected(_on_slot_refreshed)
+		):
+			hovered_slot.refreshed.disconnect(_on_slot_refreshed)
 		hovered_slot = value
-		if not (hovered_slot and hovered_slot.item):
-			hide()
-			return
-		hovered_item = hovered_slot.item
-		show()
-## Item stack represented by [member hovered_slot].
-##
-## Assigning this property emits [signal on_info_changed].
+		if is_instance_valid(hovered_slot):
+			hovered_slot.refreshed.connect(_on_slot_refreshed)
+		_sync_item(true)
 var hovered_item: SwiftItemStack:
 	set(value):
 		hovered_item = value
 		on_info_changed.emit(hovered_item)
+
+var _last_amount: int = 0
+var _last_metadata: Variant
 
 
 func _ready() -> void:
 	hide()
 	top_level = true
 	z_index = 1
-	mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for node in find_children("*", "Control", true, false):
-		var child := node as Control
-		child.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		(node as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _process(_delta: float) -> void:
 	global_position = get_global_mouse_position() + position_offest
-	var hovered = get_viewport().gui_get_hovered_control()
+	if get_viewport().gui_is_dragging(): hide(); return
+	var hovered := get_viewport().gui_get_hovered_control()
 	hovered_slot = hovered if hovered is SwiftSlot else null
+
+
+func _on_slot_refreshed() -> void: _sync_item(true)
+
+
+func _sync_item(force: bool = false) -> void:
+	var stack := hovered_slot.item if is_instance_valid(hovered_slot) else null
+	var amount := stack.amount if stack else 0
+	var metadata: Variant = stack.get_stack_state() if stack else null
+	if force or stack != hovered_item or amount != _last_amount or metadata != _last_metadata:
+		_last_amount = amount
+		_last_metadata = metadata
+		hovered_item = stack
+	visible = stack != null and (not is_inside_tree() or not get_viewport().gui_is_dragging())

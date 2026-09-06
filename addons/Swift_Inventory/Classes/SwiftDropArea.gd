@@ -1,110 +1,124 @@
 @tool
 @icon("res://addons/Swift_Inventory/Icons/SwiftDropArea.svg")
-## Free-form inventory container that places slots where item stacks are dropped.
-##
-## Unlike [SwiftGrid], this container only keeps explicitly positioned slots whose addresses
-## remain occupied, and preserves their individual positions.
+## Free-form view over explicitly positioned occupied addresses.
+## Programmatic additions become visible with set_slot_position() or restore_ui_state().
 class_name SwiftDropArea
 extends SwiftContainer
 
+var _positions: Dictionary[int, Vector2] = {}
+var _bound_inventory: SwiftInventory
+
+
+## Positions use the slot's top-left corner in this Control's local coordinates.
+func set_slot_position(address: int, position: Vector2) -> Error:
+	if (
+		swift_inventory == null
+		or not swift_inventory.has_stack(address)
+		or not position.is_finite()
+	):
+		return FAILED
+	_positions[address] = position
+	_reconcile_address(address)
+	return OK
+
+
+func capture_ui_state(state: SwiftUIState, key: StringName) -> void:
+	for slot in _get_slot_children():
+		_positions[slot.address] = slot.position
+	state.views[key] = {"positions": _positions.duplicate()}
+
+
+## Missing/now-empty addresses are discarded; malformed entries reject the whole restore.
+func restore_ui_state(state: SwiftUIState, key: StringName) -> Error:
+	if state == null or not state.views.has(key): return ERR_DOES_NOT_EXIST
+	var saved: Variant = state.views[key].get("positions")
+	if not saved is Dictionary: return ERR_INVALID_DATA
+	var positions: Dictionary[int, Vector2] = {}
+	for address in saved:
+		if not address is int or address < 0 or not saved[address] is Vector2: return ERR_INVALID_DATA
+		var point: Vector2 = saved[address]
+		if not point.is_finite(): return ERR_INVALID_DATA
+		if swift_inventory and swift_inventory.has_stack(address): positions[address] = point
+	_positions = positions
+	_bound_inventory = swift_inventory
+	_reconcile_all()
+	return OK
+
 
 func _sort_slots() -> void:
-	pass
+	for slot in _get_slot_children():
+		slot.size = slot_size
 
 
 func _reconcile_all() -> void:
-	var seen_addresses: Dictionary[int, bool] = {}
-	for child in get_children():
-		var slot := child as SwiftSlot
-		if not slot:
-			continue
-		var address := slot.address
+	if _bound_inventory != swift_inventory:
+		_positions.clear()
+		_bound_inventory = swift_inventory
+	for slot in _get_slot_children():
 		if (
-			swift_inventory == null
-			or not swift_inventory.has_stack(address)
-			or seen_addresses.has(address)
+			not _positions.has(slot.address)
+			or not swift_inventory
+			or not swift_inventory.has_stack(slot.address)
 		):
 			_remove_slot_node(slot)
-			continue
-
-		seen_addresses[address] = true
-		slot.bind(swift_inventory, address)
+	for address in _positions.keys():
+		_reconcile_address(address)
 
 
 func _reconcile_address(address: int) -> void:
-	if address < 0:
-		return
-
 	var slots := _get_slots_for_address(address)
-	if swift_inventory == null or not swift_inventory.has_stack(address):
+	if not swift_inventory or not swift_inventory.has_stack(address):
+		_positions.erase(address)
 		for slot in slots:
 			_remove_slot_node(slot)
 		return
-
-	if slots.is_empty():
-		return
-
-	slots[0].bind(swift_inventory, address)
+	if not _positions.has(address): return
+	var slot := slots[0] if not slots.is_empty() else _create_slot(address)
+	slot.position = _positions[address]
+	slot.size = slot_size
+	slot.bind(swift_inventory, address)
 	for index in range(1, slots.size()):
 		_remove_slot_node(slots[index])
 
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-	return (
-		data is Dictionary
-		and data.get("inventory") is SwiftInventory
-		and data.has("address")
-		and data.has("quantity")
-	)
+	var source := SwiftDrag.get_source(data)
+	if source == null or swift_inventory == null: return false
+	# A whole stack already in the area can be repositioned even under an edited rule.
+	if data.inventory == swift_inventory and data.quantity == source.amount: return true
+	return _get_available_address(source, data.quantity) >= 0
 
 
-func _drop_data(_at_position: Vector2, data: Variant) -> void:
-	if not swift_inventory:
+func _drop_data(at_position: Vector2, data: Variant) -> void:
+	if not _can_drop_data(at_position, data): return
+	var source := SwiftDrag.get_source(data)
+	if data.inventory == swift_inventory and data.quantity == source.amount:
+		set_slot_position(data.address, at_position - Vector2(slot_size) / 2)
 		return
-
-	var from_inventory := data["inventory"] as SwiftInventory
-	var from_address: int = data["address"]
-	var quantity: int = data["quantity"]
-
-	var from_stack := from_inventory.get_stack(from_address)
-	if not from_stack:
-		return
-
-	var requested_quantity := mini(quantity, from_stack.amount)
-	if requested_quantity <= 0:
-		return
-
-	var address := _get_available_address()
+	var address := _get_available_address(source, data.quantity)
 	var previous_size := swift_inventory.size
-	if address >= swift_inventory.size:
-		swift_inventory.size = address + 1
-
-	var remaining := from_inventory.try_transfer(
-		from_address, swift_inventory, address, requested_quantity
-	)
-	if remaining >= requested_quantity:
-		if swift_inventory.size != previous_size:
+	if address == previous_size: swift_inventory.size += 1
+	if SwiftDrag.drop(data, swift_inventory, address) <= 0:
+		if swift_inventory.size > previous_size and not swift_inventory.has_stack(address):
 			swift_inventory.size = previous_size
 		return
-
-	var slot := _get_slot(address)
-	if not slot:
-		slot = _create_slot(address, _at_position)
-		slot.bind(swift_inventory, address)
-	else:
-		slot.position = _at_position - Vector2(slot_size) / 2
+	set_slot_position(address, at_position - Vector2(slot_size) / 2)
 
 
-func _get_available_address() -> int:
+func _get_available_address(stack: SwiftItemStack = null, quantity: int = 0) -> int:
+	if swift_inventory == null: return -1
 	for address in range(swift_inventory.size):
 		if not swift_inventory.has_stack(address):
-			return address
-	return swift_inventory.size
+			if (
+				stack == null
+				or swift_inventory.get_insertable_quantity(address, stack, quantity) > 0
+			):
+				return address
+	if stack == null or swift_inventory.get_expansion_quantity(stack, quantity) > 0:
+		return swift_inventory.size
+	return -1
 
 
 func _get_slot(address: int) -> SwiftSlot:
-	for child in get_children():
-		var slot := child as SwiftSlot
-		if slot and slot.address == address:
-			return slot
-	return null
+	var slots := _get_slots_for_address(address)
+	return slots[0] if not slots.is_empty() else null

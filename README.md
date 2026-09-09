@@ -18,6 +18,21 @@ Build inventories with unmatched speed.
 
 </div>
 
+# 🗺️ Roadmap
+
+```mermaid
+flowchart LR
+    A["🩹 <b>v2.2.1</b><br/>Correctness<br/><br/>- Bug fixing<br/>- Code quality"]
+
+    B["✨ <b>v2.3</b><br/>Inventory UX / API<br/><br/>- Query API<br/>- Filter / sort<br/>- Compact / merge<br/>- Quick transfer / take all<br/>- Item actions<br/>- World pickup / drop"]
+
+    C["🎮 <b>v2.4</b><br/>Gameplay Modules<br/><br/>- Equipment<br/>- Weight / item-count constraints<br/>- Loot tables<br/>- Transactions<br/>- Crafting"]
+
+    D["🚀 <b>v3.x</b><br/>Advanced Systems<br/><br/>- Tetris inventory<br/>- Network replication adapter<br/>- Nested containers<br/>- Database / editor tooling<br/>- Save migrations + portable serialization"]
+
+    A --> B --> C --> D
+```
+
 ## ⛑️ Development Status
 
 Swift Inventory is actively being developed. The core inventory resources, grid UI, free-form drop areas, slots, stacking, stack-specific metadata, transfers, runtime drag and drop, and editor workflow are available now.

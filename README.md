@@ -14,7 +14,7 @@ Build inventories with unmatched speed.
 ![Status](https://img.shields.io/badge/Status-In%20Development-orange)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-[Godot Asset Store](https://store.godotengine.org/asset/blodyx/swift-inventory/) · [GitHub](https://github.com/BlodyxCZ/Swift-Inventory-Godot-Addon) · [Included Example](addons/Swift_Inventory/Example/example_scene.tscn)
+[Godot Asset Store](https://store.godotengine.org/asset/blodyx/swift-inventory/) · [GitHub](https://github.com/BlodyxCZ/Swift-Inventory-Godot-Addon)
 
 </div>
 

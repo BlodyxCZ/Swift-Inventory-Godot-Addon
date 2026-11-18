@@ -35,7 +35,13 @@ static func copy_value(value: Variant) -> Variant:
 
 
 static func _copy_value(value: Variant, copies: Array, errors: Array) -> Variant:
-	for pair in copies: if is_same(pair[0], value): return pair[1]
+	for pair in copies:
+		if is_same(pair[0], value):
+			return pair[1]
+	if _is_packed_array(typeof(value)):
+		var result: Variant = value.duplicate()
+		copies.append([value, result])
+		return result
 	if value is Dictionary:
 		var result: Dictionary = value.duplicate(false)
 		result.clear()
@@ -100,6 +106,10 @@ static func _is_shared_asset(value: Resource) -> bool:
 	return value is Script or value is Texture or value is SwiftItemData
 
 
+static func _is_packed_array(type: Variant.Type) -> bool:
+	return type >= TYPE_PACKED_BYTE_ARRAY and type <= TYPE_PACKED_VECTOR4_ARRAY
+
+
 static func _has_default_constructor(value: Resource) -> bool:
 	var script: Script = value.get_script()
 	while script:
@@ -113,7 +123,11 @@ static func _has_default_constructor(value: Resource) -> bool:
 ## Structural comparison state for mutable metadata. Resource properties are captured by
 ## value, so independent copies compare equally and later nested changes are detectable.
 static func value_state(value: Variant, parents: Array = []) -> Variant:
-	if not (value is Array or value is Dictionary or value is Object): return [typeof(value), value]
+	var type := typeof(value)
+	if _is_packed_array(type):
+		return [type, value.duplicate()]
+	if not (value is Array or value is Dictionary or value is Object):
+		return [type, value]
 	for index in parents.size():
 		if is_same(parents[index], value):
 			return ["cycle", index]

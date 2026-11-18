@@ -28,10 +28,11 @@ enum CHANGES { add, remove, move, swap, transfer, set, size, inventory, rules }
 		size = value
 		_emit_change(CHANGES.size, -1, -1)
 
-## Serialized address mapping. Direct dictionary edits bypass validation and notifications.
+## Serialized address mapping. Assignment copies the mapping and keeps its stack references.
+## Direct edits to the stored dictionary bypass validation and notifications.
 @export var inventory: Dictionary[int, SwiftItemStack] = {}:
 	set(value):
-		inventory = value
+		inventory = value.duplicate()
 		for stack in inventory.values():
 			if stack and stack.get_inventory_owner() == null:
 				stack._claim_inventory(self)
@@ -104,20 +105,20 @@ func try_move(from_address: int, to_address: int, quantity: int) -> int:
 func try_swap(
 	first_address: int, second_address: int, other_inventory: SwiftInventory = null
 ) -> Error:
-	if other_inventory == null: other_inventory = self
-	if not has_stack(first_address) or not other_inventory.has_stack(second_address): return FAILED
-	if other_inventory == self and first_address == second_address: return OK
+	if other_inventory == null:
+		other_inventory = self
+	if not _can_swap(first_address, second_address, other_inventory):
+		return FAILED
+	if other_inventory == self and first_address == second_address:
+		return OK
 	var first := self.get_stack(first_address)
 	var second := other_inventory.get_stack(second_address)
-	if not can_set_stack(first_address, second, second_address if other_inventory == self else -1): return FAILED
-	if not other_inventory.can_set_stack(
-		second_address, first, first_address if other_inventory == self else -1
-	): return FAILED
 	inventory[first_address] = second
 	other_inventory.inventory[second_address] = first
 	second._claim_inventory(self)
 	first._claim_inventory(other_inventory)
-	if other_inventory == self: _emit_change(CHANGES.swap, first_address, second_address)
+	if other_inventory == self:
+		_emit_change(CHANGES.swap, first_address, second_address)
 	else:
 		_emit_change(CHANGES.transfer, first_address, -1)
 		other_inventory._emit_change(CHANGES.transfer, -1, second_address)
@@ -172,28 +173,27 @@ func transfer_to(other_inventory: SwiftInventory) -> Error:
 	return OK if inventory.is_empty() else FAILED
 
 
-## Validates replacement, including rules and duplicate placements within this inventory.
+## Validates replacement, including rules and stack ownership.
 ## ignore_address is the source address of a same-inventory move or swap.
 func can_set_stack(address: int, stack: SwiftItemStack, ignore_address: int = -1) -> bool:
-	if not _is_valid_address(address): return false
-	if stack == null: return true
-	if not stack.is_valid() or stack.amount > get_slot_limit(address, stack.item_data): return false
-	for current in inventory:
-		if current != address and current != ignore_address and inventory[current] == stack:
-			return false
-	return _rules_accept(address, stack)
+	if not _is_valid_address(address):
+		return false
+	if stack == null or inventory.get(address) == stack:
+		return true
+	var owner := stack.get_inventory_owner()
+	return (owner == null or owner == self) and _can_place_stack(address, stack, ignore_address)
 
 
 ## Replaces or clears one address. An unchanged stack remains legal after a rule edit.
 func set_stack(address: int, stack: SwiftItemStack) -> Error:
-	if not _is_valid_address(address): return FAILED
-	if stack != null and inventory.get(address) == stack: return OK
-	if stack and stack.get_inventory_owner() != null and stack.get_inventory_owner() != self: return FAILED
-	if not can_set_stack(address, stack): return FAILED
+	if not can_set_stack(address, stack):
+		return FAILED
 	if stack == null:
-		if not inventory.has(address): return OK
-		inventory.erase(address)
+		if not inventory.erase(address):
+			return OK
 	else:
+		if inventory.get(address) == stack:
+			return OK
 		inventory[address] = stack
 		stack._claim_inventory(self)
 	_emit_change(CHANGES.set, -1, address)
@@ -218,12 +218,9 @@ func set_rule(address: int, rule: SwiftRule) -> Error:
 
 ## Effective per-address quantity cap, combining item, inventory and slot limits.
 func get_slot_limit(address: int, data: SwiftItemData) -> int:
-	if not _is_valid_address(address) or data == null: return 0
-	var limit := maxi(0, data.max_stack_size)
-	for rule in _get_rules(address):
-		if rule.max_quantity > 0:
-			limit = mini(limit, rule.max_quantity)
-	return limit
+	if not _is_valid_address(address) or data == null:
+		return 0
+	return _get_slot_limit(address, data)
 
 
 ## Nonmutating insertion query. Custom rules inspect the proposed final stack.
@@ -242,13 +239,11 @@ func get_insertable_quantity(address: int, stack: SwiftItemStack, quantity: int 
 
 ## Nonmutating query for a new final address, used by growing free-form drop areas.
 func get_expansion_quantity(stack: SwiftItemStack, quantity: int) -> int:
-	if stack == null or not stack.is_valid() or quantity <= 0: return 0
-	var limit := stack.item_data.max_stack_size
-	for rule in _get_rules(size):
-		if rule.max_quantity > 0:
-			limit = mini(limit, rule.max_quantity)
-	var added := mini(quantity, limit)
-	return added if _rules_accept(size, stack.copy(added)) else 0
+	if stack == null or not stack.is_valid() or quantity <= 0:
+		return 0
+	var added := mini(quantity, _get_slot_limit(size, stack.item_data))
+	var candidate := stack.copy(added)
+	return added if candidate and _rules_accept(size, candidate) else 0
 
 
 func has_stack(address: int) -> bool: return self.get_stack(address) != null
@@ -266,13 +261,17 @@ func is_full() -> bool: return _get_first_empty_address() == -1
 
 ## Validates structural invariants. Edited rules may legitimately reject old contents.
 func validate() -> Error:
-	if format_version != 1: return ERR_INVALID_DATA
-	var seen: Array[SwiftItemStack] = []
+	if format_version != 1:
+		return ERR_INVALID_DATA
+	var seen: Dictionary[SwiftItemStack, bool] = {}
 	for address in inventory:
 		var stack: SwiftItemStack = inventory[address]
-		if not _is_valid_address(address) or stack == null or not stack.is_valid() or stack in seen: return ERR_INVALID_DATA
-		if stack.get_inventory_owner() != null and stack.get_inventory_owner() != self: return ERR_INVALID_DATA
-		seen.append(stack)
+		if not _is_valid_address(address) or stack == null or not stack.is_valid() or stack in seen:
+			return ERR_INVALID_DATA
+		var owner := stack.get_inventory_owner()
+		if owner != null and owner != self:
+			return ERR_INVALID_DATA
+		seen[stack] = true
 	for address in slot_rules:
 		if not _is_valid_address(address):
 			return ERR_INVALID_DATA
@@ -310,6 +309,40 @@ func load_from_file(path: String) -> Error:
 	_suppress_changes = false
 	_emit_change(CHANGES.inventory, -1, -1)
 	return OK
+
+
+func _can_swap(first_address: int, second_address: int, other_inventory: SwiftInventory) -> bool:
+	var first := self.get_stack(first_address)
+	var second := other_inventory.get_stack(second_address)
+	if first == null or second == null:
+		return false
+	var same_inventory := other_inventory == self
+	if same_inventory and first_address == second_address:
+		return true
+	return (
+		first != second
+		and _can_place_stack(first_address, second, second_address if same_inventory else -1)
+		and other_inventory._can_place_stack(
+			second_address, first, first_address if same_inventory else -1
+		)
+	)
+
+
+func _can_place_stack(address: int, stack: SwiftItemStack, ignore_address: int) -> bool:
+	if not stack.is_valid() or stack.amount > get_slot_limit(address, stack.item_data):
+		return false
+	for current in inventory:
+		if current != address and current != ignore_address and inventory[current] == stack:
+			return false
+	return _rules_accept(address, stack)
+
+
+func _get_slot_limit(address: int, data: SwiftItemData) -> int:
+	var limit := maxi(0, data.max_stack_size)
+	for rule in _get_rules(address):
+		if rule.max_quantity > 0:
+			limit = mini(limit, rule.max_quantity)
+	return limit
 
 
 func _get_rules(address: int) -> Array[SwiftRule]:

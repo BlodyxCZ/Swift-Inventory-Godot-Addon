@@ -60,7 +60,9 @@ static func _get_dragged_item_data(data: Variant) -> SwiftItemData:
 
 	var files: PackedStringArray = files_value
 	for file: String in files:
-		if file.get_extension() != "tres":
+		if file.get_extension().to_lower() not in ["tres", "res"]:
+			continue
+		if not ResourceLoader.exists(file):
 			continue
 
 		var resource := load(file)
@@ -76,7 +78,7 @@ func _show_can_drop_cursor() -> void:
 
 	var viewport := EditorInterface.get_editor_viewport_2d()
 	var slot := _find_hovered_slot(viewport)
-	if slot and _can_drop_item(slot, editor_drag_item_data):
+	if slot and _make_drop_stack(slot, editor_drag_item_data):
 		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_CAN_DROP)
 	elif slot:
 		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FORBIDDEN)
@@ -101,22 +103,23 @@ func _slot_contains_point(slot: SwiftSlot, viewport_point: Vector2) -> bool:
 	return Rect2(Vector2.ZERO, slot.size).has_point(local)
 
 
-func _can_drop_item(slot: SwiftSlot, data: SwiftItemData) -> bool:
-	if slot.swift_inventory == null or data == null:
-		return false
+func _make_drop_stack(slot: SwiftSlot, data: SwiftItemData) -> SwiftItemStack:
+	var inv := slot.swift_inventory
+	if inv == null or data == null:
+		return null
 	var quantity := mini(slot.amount if slot.item else 1, data.max_stack_size)
-	return slot.swift_inventory.can_set_stack(slot.address, SwiftItemStack.new(data, quantity))
+	var stack := SwiftItemStack.new(data, quantity)
+	return stack if inv.can_set_stack(slot.address, stack) else null
 
 
 func _apply_item_drop(slot: SwiftSlot, data: SwiftItemData) -> void:
-	if not _can_drop_item(slot, data):
+	var stack := _make_drop_stack(slot, data)
+	if stack == null:
 		return
 	var inv := slot.swift_inventory
 	var before := inv.inventory.duplicate()
 	var after := before.duplicate()
-	after[slot.address] = SwiftItemStack.new(
-		data, mini(slot.amount if slot.item else 1, data.max_stack_size)
-	)
+	after[slot.address] = stack
 	var undo := get_undo_redo()
 	undo.create_action("Set Swift Inventory item", UndoRedo.MERGE_DISABLE, inv)
 	undo.add_do_property(inv, "inventory", after)

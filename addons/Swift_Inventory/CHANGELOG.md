@@ -1,5 +1,22 @@
 # Changelog
 
+## v2.2.1 - 18/11/2026
+
+### Fixed
+
+- Detached packed arrays when copying stack metadata and recording drag or tooltip state.
+- Aligned stack replacement previews with ownership checks and shared swap validation between the inventory and drag UI.
+- Kept inventory address edits from mutating assigned dictionaries, including editor undo history.
+- Fixed autosave callbacks that changed a container's configuration during a save or tree exit.
+- Preserved drop-area positions set before the view is ready and prevented transfers into a view rebound during expansion.
+- Rejected invalid drop positions and malformed drag payloads, and handled unavailable sources in drag previews.
+- Applied hotbar selection color changes immediately and kept existing items when an Inspector quantity edit could not copy the stack.
+- Accepted binary `.res` item definitions in the editor alongside `.tres` files.
+
+### Compatibility
+
+- Swaps now share `SwiftRule` validation with drag previews. Inventory subclasses that enforce swap restrictions in `can_set_stack()` should move those checks into a `SwiftRule`.
+
 ## v2.2.0 - 06/09/2026
 
 ### Added

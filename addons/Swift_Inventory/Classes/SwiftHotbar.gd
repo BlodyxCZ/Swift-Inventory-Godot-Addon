@@ -39,7 +39,11 @@ signal item_activated(address: int, stack: SwiftItemStack)
 ## Optional alternative behavior; the default only selects on a slot action.
 @export var activate_on_select: bool = false
 @export var input_enabled: bool = true
-@export var selected_color: Color = Color(1.0, 0.78, 0.25)
+@export var selected_color: Color = Color(1.0, 0.78, 0.25):
+	set(value):
+		selected_color = value
+		if is_node_ready():
+			_refresh_selection()
 
 var _last_selected_index: int = -2
 var _last_selected_address: int = -2

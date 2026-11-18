@@ -10,7 +10,7 @@ Build inventories with unmatched speed.
 
 [![Godot Engine](https://img.shields.io/badge/Godot-4.4%2B-478CBF?logo=godot-engine&logoColor=white)](https://godotengine.org/)
 [![Language](https://img.shields.io/badge/Language-GDScript-478CBF?logo=godot-engine&logoColor=white)](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/)
-[![Version](https://img.shields.io/badge/Version-2.2.0-6C63FF)](plugin.cfg)
+[![Version](https://img.shields.io/badge/Version-2.2.1-6C63FF)](plugin.cfg)
 ![Status](https://img.shields.io/badge/Status-In%20Development-orange)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
@@ -22,7 +22,7 @@ Build inventories with unmatched speed.
 
 Swift Inventory is actively being developed. The core inventory resources, grid UI, free-form drop areas, slots, stacking, stack-specific metadata, transfers, runtime drag and drop, and editor workflow are available now.
 
-Targeted at Godot 4.8 and tested with Godot 4.4.1, 4.6.1, and 4.8-dev4. Godot 4.4 is the minimum because the public data model uses typed dictionaries.
+Targeted at Godot 4.8 and tested with Godot 4.4.1, 4.6.1, 4.7.1, and 4.8 beta 1. Godot 4.4 is the minimum because the public data model uses typed dictionaries.
 
 Insertion rules, explicit native persistence, a hotbar, and partial-stack dragging are available. Tooltips refresh after drops and changes to hovered stacks.
 
@@ -165,7 +165,7 @@ With the plugin enabled:
 
 1. Select a configured `SwiftGrid` in the 2D editor.
 2. Click one of its generated slots. The first click selects the `SwiftGrid`; with the grid selected, a second click inspects the `SwiftSlot`.
-3. Drag a `.tres` file containing `SwiftItemData` from the FileSystem dock onto a visible slot. The cursor changes to the can-drop shape over a valid target.
+3. Drag a `.tres` or `.res` file containing `SwiftItemData` from the FileSystem dock onto a visible slot. The cursor changes to the can-drop shape over a valid target.
 4. Select the slot to adjust its item or amount in the Inspector.
 
 These edits update the assigned `SwiftInventory` resource and honor its rules. Resource drops support Undo/Redo, transformed slots are hit-tested in local coordinates, and changing an amount preserves stack metadata. Only `.tres` resources containing `SwiftItemData` are accepted by the editor drop workflow.
@@ -626,7 +626,7 @@ The original pointer offset property `position_offest` remains supported; `posit
 | `try_add_stack(stack, quantity = -1)` | `int` | Inserts copies while preserving metadata and subclass fields |
 | `get_insertable_quantity(address, stack, quantity = -1)` | `int` | Nonmutating insertion query |
 | `get_slot_limit(address, item_data)` | `int` | Effective per-slot quantity limit |
-| `can_set_stack(address, stack)` | `bool` | Tests complete replacement against rules |
+| `can_set_stack(address, stack)` | `bool` | Checks whether replacement satisfies rules and stack ownership |
 | `validate()` | `Error` | Checks structural inventory invariants |
 | `create_snapshot()` | `SwiftInventory` | Detached copy, or null for invalid state |
 | `save_to_file(path)` / `load_from_file(path)` | `Error` | Explicit native persistence |

@@ -17,6 +17,8 @@ func set_slot_position(address: int, position: Vector2) -> Error:
 		or not position.is_finite()
 	):
 		return FAILED
+	if _bound_inventory != swift_inventory:
+		_reconcile_all()
 	_positions[address] = position
 	_reconcile_address(address)
 	return OK
@@ -81,28 +83,51 @@ func _reconcile_address(address: int) -> void:
 		_remove_slot_node(slots[index])
 
 
-func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
+func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
+	if swift_inventory == null or not at_position.is_finite():
+		return false
 	var source := SwiftDrag.get_source(data)
-	if source == null or swift_inventory == null: return false
+	if source == null:
+		return false
 	# A whole stack already in the area can be repositioned even under an edited rule.
-	if data.inventory == swift_inventory and data.quantity == source.amount: return true
+	if data.inventory == swift_inventory and data.quantity == source.amount:
+		return true
 	return _get_available_address(source, data.quantity) >= 0
 
 
 func _drop_data(at_position: Vector2, data: Variant) -> void:
-	if not _can_drop_data(at_position, data): return
+	var target := swift_inventory
+	if target == null or not at_position.is_finite():
+		return
 	var source := SwiftDrag.get_source(data)
-	if data.inventory == swift_inventory and data.quantity == source.amount:
-		set_slot_position(data.address, at_position - Vector2(slot_size) / 2)
+	if source == null:
+		return
+	var position := at_position - Vector2(slot_size) / 2
+	if data.inventory == target and data.quantity == source.amount:
+		set_slot_position(data.address, position)
 		return
 	var address := _get_available_address(source, data.quantity)
-	var previous_size := swift_inventory.size
-	if address == previous_size: swift_inventory.size += 1
-	if SwiftDrag.drop(data, swift_inventory, address) <= 0:
-		if swift_inventory.size > previous_size and not swift_inventory.has_stack(address):
-			swift_inventory.size = previous_size
+	if address < 0:
 		return
-	set_slot_position(address, at_position - Vector2(slot_size) / 2)
+	var expanded := address == target.size
+	if expanded:
+		target.size = address + 1
+	# Resize listeners can rebind the view or occupy the intended empty address.
+	if (
+		swift_inventory != target
+		or target.has_stack(address)
+		or SwiftDrag.drop(data, target, address) <= 0
+	):
+		if (
+			expanded
+			and target.size == address + 1
+			and not target.inventory.has(address)
+			and not target.slot_rules.has(address)
+		):
+			target.size = address
+		return
+	if swift_inventory == target:
+		set_slot_position(address, position)
 
 
 func _get_available_address(stack: SwiftItemStack = null, quantity: int = 0) -> int:

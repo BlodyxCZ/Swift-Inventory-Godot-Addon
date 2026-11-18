@@ -11,7 +11,8 @@ func setup(data: Dictionary, slot_size: Vector2) -> void:
 	payload = data
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var texture := TextureRect.new()
-	texture.texture = SwiftDrag.get_source(payload).item_data.icon
+	var source := SwiftDrag.get_source(payload)
+	texture.texture = source.item_data.icon if source else null
 	texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	texture.size = slot_size
@@ -29,15 +30,19 @@ func setup(data: Dictionary, slot_size: Vector2) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if not get_viewport().gui_is_dragging():
+		return
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		get_viewport().set_input_as_handled()
 		get_viewport().gui_cancel_drag()
 		return
-	if not event is InputEventMouseButton or not event.pressed: return
-	if not get_viewport().gui_is_dragging(): return
+	if not event is InputEventMouseButton or not event.pressed:
+		return
 	var delta := 0
-	if event.button_index == MOUSE_BUTTON_WHEEL_UP: delta = 1
-	elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN: delta = -1
+	if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+		delta = 1
+	elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+		delta = -1
 	if delta:
 		SwiftDrag.adjust_quantity(payload, delta)
 		_update_label()
@@ -49,5 +54,7 @@ func _process(_delta: float) -> void:
 
 
 func _update_label() -> void:
+	if amount_label == null:
+		return
 	var source := SwiftDrag.get_source(payload)
 	amount_label.text = "%d / %d" % [payload.quantity, source.amount] if source else "Unavailable"

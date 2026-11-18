@@ -31,15 +31,17 @@ signal refreshed
 	set(value):
 		if not Engine.is_editor_hint():
 			return
-		if not swift_inventory or not item:
+		var stack := item
+		if not stack:
 			return
-		var replacement := item.copy(mini(value, item.item_data.max_stack_size))
 		if value <= 0:
 			swift_inventory.set_stack(address, null)
-		elif value < item.amount:
-			swift_inventory.try_remove(address, item.amount - value)
+		elif value < stack.amount:
+			swift_inventory.try_remove(address, stack.amount - value)
 		else:
-			swift_inventory.set_stack(address, replacement)
+			var replacement := stack.copy(mini(value, stack.item_data.max_stack_size))
+			if replacement:
+				swift_inventory.set_stack(address, replacement)
 	get:
 		return item.amount if item else 0
 
@@ -145,10 +147,13 @@ func _validate_property(property: Dictionary) -> void:
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:
-	if Engine.is_editor_hint() or not item:
+	if Engine.is_editor_hint():
+		return null
+	var stack := item
+	if not stack:
 		return null
 	var quantity := SwiftDrag.initial_quantity(
-		item.amount, Input.is_key_pressed(KEY_SHIFT), Input.is_key_pressed(KEY_CTRL)
+		stack.amount, Input.is_key_pressed(KEY_SHIFT), Input.is_key_pressed(KEY_CTRL)
 	)
 	var payload := SwiftDrag.create_payload(swift_inventory, address, quantity)
 	var preview := SwiftDragPreview.new()
@@ -189,28 +194,3 @@ func _draw() -> void:
 	if _drop_feedback != 0:
 		var color := Color(0.3, 1.0, 0.5) if _drop_feedback > 0 else Color(1.0, 0.3, 0.3)
 		draw_rect(Rect2(Vector2(3, 3), size - Vector2(6, 6)), color, false, 2.0)
-
-
-func _get_preview(item: SwiftItemStack) -> Control:
-	var preview_texture_rect: TextureRect = TextureRect.new()
-	var preview_amount_label: Label = Label.new()
-
-	preview_texture_rect.texture = item.item_data.icon
-	preview_texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	preview_texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	preview_texture_rect.size = size
-	preview_texture_rect.position = -preview_texture_rect.size / 2
-
-	preview_amount_label.add_theme_font_size_override("font_size", size.x / 3)
-	preview_amount_label.text = str(item.amount) if item.amount > 1 else ""
-	preview_amount_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	preview_amount_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	preview_amount_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	preview_amount_label.offset_right = -2.0
-	preview_amount_label.offset_bottom = -2.0
-
-	var preview = Control.new()
-	preview.add_child(preview_texture_rect)
-	preview_texture_rect.add_child(preview_amount_label)
-
-	return preview

@@ -22,17 +22,15 @@ static var _persistence_owners: Dictionary[String, WeakRef] = {}
 @export var swift_inventory: SwiftInventory:
 	set(value):
 		var previous := swift_inventory
-		if previous != value:
-			_stop_persistence()
 		if previous and previous.on_change.is_connected(_on_swift_change):
 			previous.on_change.disconnect(_on_swift_change)
 		swift_inventory = value
 		if swift_inventory and not swift_inventory.on_change.is_connected(_on_swift_change):
 			swift_inventory.on_change.connect(_on_swift_change)
+		if previous != value:
+			_restart_persistence()
 		notify_property_list_changed()
 		if is_node_ready():
-			if previous != value:
-				_start_persistence()
 			_reconcile_all()
 		update_configuration_warnings()
 ## Size, in pixels, assigned to each [SwiftSlot] child.
@@ -49,9 +47,8 @@ static var _persistence_owners: Dictionary[String, WeakRef] = {}
 	set(value):
 		if auto_persist == value:
 			return
-		_stop_persistence()
 		auto_persist = value
-		_start_persistence()
+		_restart_persistence()
 		update_configuration_warnings()
 ## Unique native save file under user://, for example user://saves/player.tres.
 ## Missing files start from the assigned inventory. Existing files load into the same Resource.
@@ -59,9 +56,8 @@ static var _persistence_owners: Dictionary[String, WeakRef] = {}
 	set(value):
 		if save_path == value:
 			return
-		_stop_persistence()
 		save_path = value
-		_start_persistence()
+		_restart_persistence()
 		update_configuration_warnings()
 @export_group("")
 
@@ -71,6 +67,7 @@ var _persistence_key: String = ""
 var _persistence_revision: int = 0
 var _persistence_active: bool = false
 var _save_pending: bool = false
+var _leaving_tree: bool = false
 
 
 func _on_swift_change(change: SwiftInventory.CHANGES, from_address: int, to_address: int) -> void:
@@ -114,12 +111,14 @@ func _ready() -> void:
 
 
 func _enter_tree() -> void:
+	_leaving_tree = false
 	# _ready does not repeat when an existing node is removed and re-added.
 	if is_node_ready():
 		_start_persistence()
 
 
 func _exit_tree() -> void:
+	_leaving_tree = true
 	_stop_persistence()
 
 
@@ -145,6 +144,7 @@ func _start_persistence() -> void:
 		Engine.is_editor_hint()
 		or not is_inside_tree()
 		or not is_node_ready()
+		or _leaving_tree
 		or not auto_persist
 		or _persistence_inventory != null
 	):
@@ -187,15 +187,23 @@ func _start_persistence() -> void:
 		_queue_autosave()
 
 
+func _restart_persistence() -> void:
+	var next_revision := _persistence_revision + 1
+	_stop_persistence()
+	# A save listener may already have handled a newer configuration.
+	if next_revision == _persistence_revision:
+		_start_persistence()
+
+
 func _queue_autosave() -> void:
 	if not _persistence_active or _save_pending:
 		return
 	_save_pending = true
-	_flush_autosave.call_deferred()
+	_flush_autosave.call_deferred(_persistence_revision)
 
 
-func _flush_autosave() -> void:
-	if not _persistence_active or not _save_pending:
+func _flush_autosave(revision: int) -> void:
+	if revision != _persistence_revision or not _persistence_active or not _save_pending:
 		return
 	_save_pending = false
 	_write_inventory(_persistence_inventory, _persistence_path)

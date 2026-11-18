@@ -9,6 +9,8 @@ extends Panel
 
 ## Emitted after the slot's visuals and inspector properties are refreshed.
 signal refreshed
+## Emitted when an occupied slot's actions are requested by mouse or keyboard.
+signal item_actions_requested(slot: SwiftSlot)
 
 ## Item definition stored at this slot's address.
 ##
@@ -75,16 +77,22 @@ var selected: bool = false:
 		queue_redraw()
 var selection_color: Color = Color(1.0, 0.78, 0.25)
 var _drop_feedback: int = 0
+var _move_selected: bool = false
+var _keyboard_actions_requested: bool = false
 
 
 ## Initializes the slot to expand and fill the space assigned by its parent container.
 func _init() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
+	if not Engine.is_editor_hint():
+		focus_mode = Control.FOCUS_ALL
 
 
 ## Binds the slot to [param slot_address] in [param inventory] and refreshes its presentation.
 func bind(inventory: SwiftInventory, slot_address: int) -> void:
+	if swift_inventory != inventory or address != slot_address:
+		_set_move_selected(false)
 	if swift_inventory and swift_inventory.on_change.is_connected(_on_inventory_change):
 		swift_inventory.on_change.disconnect(_on_inventory_change)
 	swift_inventory = inventory
@@ -131,6 +139,7 @@ func setup() -> void:
 		amount_label = Label.new()
 		add_child(amount_label)
 		amount_label.name = "SwiftItemAmount"
+		amount_label.theme_type_variation = &"SwiftItemAmount"
 		amount_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		amount_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		amount_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -144,6 +153,61 @@ func _validate_property(property: Dictionary) -> void:
 		property.usage &= ~PROPERTY_USAGE_STORAGE
 	if property.name == "amount" and not item:
 		property.usage &= ~PROPERTY_USAGE_EDITOR
+
+
+func _gui_input(event: InputEvent) -> void:
+	if Engine.is_editor_hint() or get_viewport().gui_is_dragging():
+		return
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			_confirm_move()
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			_request_item_actions(false)
+	elif event.is_pressed() and not event.is_echo():
+		_handle_slot_action(event)
+
+
+func _handle_slot_action(event: InputEvent) -> void:
+	if event is InputEventKey and (
+		event.keycode == KEY_MENU
+		or (event.keycode == KEY_F10 and event.shift_pressed)
+	):
+		_request_item_actions(true)
+	elif event.is_action_pressed(&"ui_accept"):
+		_confirm_move()
+	else:
+		var direction := Vector2(
+			float(event.is_action_pressed(&"ui_right")) - float(event.is_action_pressed(&"ui_left")),
+			float(event.is_action_pressed(&"ui_down")) - float(event.is_action_pressed(&"ui_up"))
+		)
+		var container := get_parent() as SwiftContainer
+		if direction != Vector2.ZERO and container != null:
+			accept_event()
+			container._focus_slot_in_direction(self, direction)
+
+
+func _confirm_move() -> void:
+	var container := get_parent() as SwiftContainer
+	if container == null:
+		return
+	var menu := container.item_actions_menu
+	if is_instance_valid(menu) and menu.has_move_selection():
+		accept_event()
+		menu._move_to_slot(self)
+
+
+func _request_item_actions(from_keyboard: bool) -> void:
+	if item == null or not item_actions_requested.has_connections():
+		return
+	accept_event()
+	_keyboard_actions_requested = from_keyboard
+	item_actions_requested.emit(self)
+	_keyboard_actions_requested = false
+
+
+func _set_move_selected(value: bool) -> void:
+	_move_selected = value
+	queue_redraw()
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:
@@ -186,11 +250,32 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_MOUSE_EXIT or what == NOTIFICATION_DRAG_END:
 		_drop_feedback = 0
 		queue_redraw()
+	elif what == NOTIFICATION_FOCUS_ENTER or what == NOTIFICATION_FOCUS_EXIT:
+		queue_redraw()
 
 
 func _draw() -> void:
 	if selected:
 		draw_rect(Rect2(Vector2.ONE, size - Vector2(2, 2)), selection_color, false, 2.0)
+	if has_focus() and size.x >= 10.0 and size.y >= 10.0:
+		var focus_rect := Rect2(Vector2(4, 4), size - Vector2(8, 8))
+		draw_rect(focus_rect, Color("#101820"), false, 4.0)
+		draw_rect(focus_rect, Color.WHITE, false, 2.0)
+	if _move_selected and size.x >= 16.0 and size.y >= 16.0:
+		draw_rect(Rect2(Vector2(7, 7), size - Vector2(14, 14)), Color("#63edd1"), false, 2.0)
 	if _drop_feedback != 0:
 		var color := Color(0.3, 1.0, 0.5) if _drop_feedback > 0 else Color(1.0, 0.3, 0.3)
 		draw_rect(Rect2(Vector2(3, 3), size - Vector2(6, 6)), color, false, 2.0)
+		if size.x >= 24.0 and size.y >= 24.0:
+			_draw_drop_icon(color)
+
+
+func _draw_drop_icon(color: Color) -> void:
+	var point := Vector2(size.x - 11, 11)
+	draw_circle(point, 7.0, Color("#101820"), true, -1.0, true)
+	if _drop_feedback > 0:
+		draw_line(point + Vector2(-4, 0), point + Vector2(-1, 3), color, 2.0, true)
+		draw_line(point + Vector2(-1, 3), point + Vector2(4, -3), color, 2.0, true)
+	else:
+		draw_line(point + Vector2(-3, -3), point + Vector2(3, 3), color, 2.0, true)
+		draw_line(point + Vector2(3, -3), point + Vector2(-3, 3), color, 2.0, true)

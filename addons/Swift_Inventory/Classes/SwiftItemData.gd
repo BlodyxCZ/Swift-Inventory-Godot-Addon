@@ -18,3 +18,5 @@ extends Resource
 @export var max_stack_size: int = 1
 ## Labels used to categorize or query the item.
 @export var tags: Array[StringName] = []
+## Context actions offered in this order when available for the current stack.
+@export var actions: Array[SwiftItemAction] = []

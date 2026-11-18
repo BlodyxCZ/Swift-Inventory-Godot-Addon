@@ -1,8 +1,61 @@
 @tool
 extends EditorPlugin
 
+class MultiGridResizeInspector extends EditorInspectorPlugin:
+	func _can_handle(object: Object) -> bool:
+		return (
+			object.is_class("MultiNodeEdit")
+			and EditorInterface.get_selection().get_selected_nodes().any(
+				func(node: Node) -> bool: return node is SwiftGrid
+			)
+		)
+
+	func _parse_property(
+		_object: Object,
+		_type: Variant.Type,
+		name: String,
+		_hint: PropertyHint,
+		_hint_string: String,
+		_usage: PropertyUsageFlags,
+		_wide: bool
+	) -> bool:
+		if name != "inventory_size":
+			return false
+		# Godot's multi-node editor bypasses property undo hooks.
+		var notice := Label.new()
+		notice.text = tr("Select one SwiftGrid to edit Inventory Size.")
+		notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		add_custom_control(notice)
+		return true
+
+
 var editor_drag_data: Variant
 var editor_drag_item_data: SwiftItemData
+var _multi_grid_resize_inspector := MultiGridResizeInspector.new()
+
+
+func _enter_tree() -> void:
+	add_undo_redo_inspector_hook_callback(_record_inventory_resize_undo)
+	add_inspector_plugin(_multi_grid_resize_inspector)
+
+
+func _record_inventory_resize_undo(
+	undo: EditorUndoRedoManager, object: Object, property: String, _new_value: Variant
+) -> void:
+	if property != "inventory_size" or not object is SwiftGrid or object.swift_inventory == null:
+		return
+	var inventory: SwiftInventory = object.swift_inventory
+	# A shared external resource usually has a different history than the inspected grid.
+	if undo.get_object_history_id(inventory) != undo.get_object_history_id(object):
+		undo.force_fixed_history()
+	# The Inspector restores the grid's capacity first. Keep the original mappings for
+	# every edit, since the Inspector can merge successive size edits into one action.
+	undo.add_undo_method(
+		inventory,
+		"_restore_resize_contents",
+		inventory.inventory.duplicate(),
+		inventory.slot_rules.duplicate()
+	)
 
 
 func _handles(object: Object) -> bool:
@@ -128,5 +181,7 @@ func _apply_item_drop(slot: SwiftSlot, data: SwiftItemData) -> void:
 
 
 func _exit_tree() -> void:
+	remove_inspector_plugin(_multi_grid_resize_inspector)
+	remove_undo_redo_inspector_hook_callback(_record_inventory_resize_undo)
 	editor_drag_data = null
 	editor_drag_item_data = null

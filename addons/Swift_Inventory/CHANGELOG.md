@@ -1,5 +1,26 @@
 # Changelog
 
+## v2.3.0 - Unreleased
+
+### Added
+
+- Added `SwiftItemQuery` and inventory methods for finding and counting stacks by item ID, tags, text, or metadata.
+- Added grid filtering and sorting without changing stored addresses or hotbar order.
+- Added rule-aware stack merging and compaction.
+- Added one-stack quick transfer and Take All, with optional middle-click transfer in grids.
+- Added reusable item actions and an optional right-click menu that rechecks the original stack.
+- Added `SwiftWorldPickup` for partial, metadata-preserving transfers between world pickups and inventories.
+- Added optional width-based slot scaling for grids and hotbars.
+- Redesigned the example scene around the chest, player inventory, and a persistent item details panel with contextual actions.
+
+### Fixed
+
+- Restored removed stacks and slot rules when undoing grid capacity edits in the Inspector.
+- Kept free-form slots in proportion to the resized drop area and preserved their placements across UI state saves.
+- Added keyboard focus, slot navigation, and a click-or-keyboard alternative to dragging stacks.
+- Added quick-transfer results for partial and blocked moves. The example now explains empty filters, capacity limits, and failed world drops.
+- Improved the example's slot contrast and text size, and made the hotbar number keys functional.
+
 ## v2.2.1 - 18/11/2026
 
 ### Fixed

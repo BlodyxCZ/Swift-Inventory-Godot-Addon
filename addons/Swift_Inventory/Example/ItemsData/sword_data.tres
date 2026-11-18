@@ -7,6 +7,6 @@
 script = ExtResource("2_28jkk")
 id = &"Sword"
 display_name = "Sword"
-description = "It's a sword."
+description = "Equip this sword or place it in the enchanting slot."
 icon = ExtResource("1_x0e1s")
 metadata/_custom_type_script = "uid://cq5053m8y7vf1"

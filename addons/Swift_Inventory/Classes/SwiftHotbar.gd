@@ -132,33 +132,34 @@ func _refresh_selection() -> void:
 			label.name = "SwiftHotbarKey"
 			label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			label.position = Vector2(3, 1)
-			label.add_theme_font_size_override("font_size", 12)
 			slot.add_child(label)
+		label.add_theme_font_size_override("font_size", maxi(14, label.get_theme_default_font_size() - 2))
 		label.text = str(index + 1) if index != 9 else "0"
 		index += 1
 
 
 func _get_minimum_size() -> Vector2:
 	var count := _get_display_addresses().size()
-	return (
-		Vector2(count * slot_size.x + maxi(0, count - 1) * separation.x, slot_size.y)
-		if count
-		else Vector2.ZERO
+	if count == 0:
+		return Vector2.ZERO
+	return Vector2(
+		count * slot_size.x + (count - 1) * separation.x, get_effective_slot_size().y
 	)
 
 
-func _sort_slots() -> void:
-	var slots := _get_slot_children()
-	for index in slots.size():
-		fit_child_in_rect(
-			slots[index], Rect2(Vector2(index * (slot_size.x + separation.x), 0), slot_size)
-		)
-	_sync_layout_minimum()
+func _get_layout_columns() -> int:
+	return _get_scale_columns()
+
+
+func _get_scale_columns() -> int:
+	return maxi(1, _get_display_addresses().size())
 
 
 func _validate_property(property: Dictionary) -> void:
 	super._validate_property(property)
-	if property.name == "inventory_size":
+	if property.name in [
+		"inventory_size", "filter_query", "sort_by", "sort_descending", "max_columns"
+	]:
 		property.usage &= ~(PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_STORAGE)
 
 

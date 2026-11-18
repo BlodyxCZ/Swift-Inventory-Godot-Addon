@@ -10,7 +10,7 @@ Build inventories with unmatched speed.
 
 [![Godot Engine](https://img.shields.io/badge/Godot-4.4%2B-478CBF?logo=godot-engine&logoColor=white)](https://godotengine.org/)
 [![Language](https://img.shields.io/badge/Language-GDScript-478CBF?logo=godot-engine&logoColor=white)](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/)
-[![Version](https://img.shields.io/badge/Version-2.2.1-6C63FF)](addons/Swift_Inventory/plugin.cfg)
+[![Version](https://img.shields.io/badge/Version-2.3.0-6C63FF)](addons/Swift_Inventory/plugin.cfg)
 ![Status](https://img.shields.io/badge/Status-In%20Development-orange)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
@@ -24,7 +24,7 @@ Build inventories with unmatched speed.
 flowchart LR
     A["🩹 <b>v2.2.1</b><br/>Correctness<br/><br/>- Bug fixing<br/>- Code quality"]
 
-    B["✨ <b>v2.3</b><br/>Inventory UX / API<br/><br/>- Query API<br/>- Filter / sort<br/>- Compact / merge<br/>- Quick transfer / take all<br/>- Item actions<br/>- World pickup / drop"]
+    B["✨ <b>v2.3.0</b><br/>Inventory UX / API<br/><br/>- Query API<br/>- Filter / sort<br/>- Compact / merge<br/>- Quick transfer / take all<br/>- Item actions<br/>- World pickup / drop"]
 
     C["🎮 <b>v2.4</b><br/>Gameplay Modules<br/><br/>- Equipment<br/>- Weight / item-count constraints<br/>- Loot tables<br/>- Transactions<br/>- Crafting"]
 
@@ -52,6 +52,9 @@ If you encounter another problem, [open a GitHub issue](https://github.com/Blody
 - **Resource-based data** — inventory state and item definitions are independent from the UI.
 - **Automatic stacking** — compatible stacks are filled before empty slots are used.
 - **Slot rules** — filter items by ID, tags, custom predicates, and per-slot quantity caps.
+- **Inventory queries and grid projections** — find matching stacks by ID, name, tags, and metadata, then filter or sort a grid without moving any items.
+- **Inventory organization and transfers** — merge compatible stacks, compact gaps, quick-transfer one stack, or take all from a chest.
+- **Item actions and world pickups** — attach gameplay actions to item definitions and use the same inventory rules for world pickup and drop.
 - **Persistent inventories** — explicit `.tres`/`.res` save and load, plus separate UI state.
 - **Hotbar** — a selectable range of inventory addresses with configurable input actions.
 - **Partial-stack dragging** — Shift for half, Ctrl for one, wheel to adjust, and Escape to cancel.
@@ -77,6 +80,10 @@ If you encounter another problem, [open a GitHub issue](https://github.com/Blody
 | `SwiftItemData` | `Resource` | Static item definition: ID, name, description, icon, tags, and stack limit |
 | `SwiftItemStack` | `Resource` | An item definition, current amount, and optional stack-specific metadata |
 | `SwiftInventory` | `Resource` | Inventory size, stacks, rules, operations, persistence, and change notifications |
+| `SwiftItemQuery` | `Resource` | Reusable filters for occupied inventory addresses |
+| `SwiftItemAction` | `Resource` | Game-defined action offered by an item definition |
+| `SwiftItemActionsMenu` | `PopupMenu` | Optional slot context menu for available item actions |
+| `SwiftWorldPickup` | `Node` | One world stack with rule-aware pickup and drop |
 | `SwiftRule` | `Resource` | Reusable insertion filters, quantity caps, and custom predicates |
 | `SwiftUIState` | `Resource` | Separate persistent hotbar selections and drop-area positions |
 | `SwiftContainer` | `Container` | Shared inventory reconciliation and slot management for container layouts |
@@ -162,6 +169,10 @@ func _ready() -> void:
 
 `SwiftGrid` creates the required `SwiftSlot` children and keeps them bound to their matching inventory addresses. Changing the inventory size automatically reconciles the grid.
 
+Enable **Scale Slots To Width** on a `SwiftGrid` or `SwiftHotbar` in the Inspector to grow its slots as the view gets wider. The grid uses **Max Columns** and wraps when a full row of minimum-size slots does not fit. The hotbar stays in one row. Both keep the aspect ratio and minimum dimensions from **Slot Size**. This option is off by default and enabled in the example.
+
+For width-scaled grids inside a `ScrollContainer`, set **Vertical Scroll Mode** to **Reserve** to keep the grid width stable when the scrollbar appears.
+
 ### 4. Try the included example
 
 Open and run:
@@ -170,13 +181,15 @@ Open and run:
 res://addons/Swift_Inventory/Example/example_scene.tscn
 ```
 
-The original scene demonstrates grids, free-form inventories, and an item information panel. For the new features, run `res://addons/Swift_Inventory/Example/feature_demo.tscn` (F6): it includes capped equipment slots, a ten-slot hotbar, partial dragging, and Save/Load buttons.
+Filter and sort the chest, merge and compact its stacks, or take all into the player inventory. Select a slot by clicking it or using Tab and the arrow keys. The Item details panel shows the selected stack, with actions such as Use potion and Send to chest when available. Use Move stack to move items without dragging, or right-click or press Shift+F10 to open the slot's actions menu. Press 1–6 to select a hotbar slot. The world pile supports pickup and drop, and Temporary storage is a free-form container.
 
 ## 🫴 Free-Form Drop Areas
 
 Add a `SwiftDropArea` to a `Control`-based scene, assign a `SwiftInventory` to `swift_inventory`, and configure `slot_size`. When a stack is dropped onto the area, it transfers into the first available address and its `SwiftSlot` is positioned at the drop point.
 
 Unlike `SwiftGrid`, a `SwiftDropArea` only creates a visible slot when a stack is explicitly dropped and positioned in the area. Programmatic additions become visible through `set_slot_position(address, top_left)` or restored UI state. Drops search for an eligible empty address and may expand the inventory by one address if needed and allowed by its rules. Repositioning a whole stack already in the area keeps the same address and capacity.
+
+Placed stacks retain their relative positions as the drop area resizes. UI state saves record the placement bounds and also support loading older files with pixel positions.
 
 ## 🔀 Editor Workflow
 
@@ -187,7 +200,7 @@ With the plugin enabled:
 3. Drag a `.tres` or `.res` file containing `SwiftItemData` from the FileSystem dock onto a visible slot. The cursor changes to the can-drop shape over a valid target.
 4. Select the slot to adjust its item or amount in the Inspector.
 
-These edits update the assigned `SwiftInventory` resource and honor its rules. Resource drops support Undo/Redo, transformed slots are hit-tested in local coordinates, and changing an amount preserves stack metadata. Only `.tres` resources containing `SwiftItemData` are accepted by the editor drop workflow.
+These edits update the assigned `SwiftInventory` resource and honor its rules. Resource drops support Undo/Redo, transformed slots are hit-tested in local coordinates, and changing an amount preserves stack metadata. Select one grid to edit its capacity. Undo restores the original size and any stacks and slot rules removed by the resize.
 
 ## 🛠️ Working With Items
 
@@ -489,6 +502,49 @@ activate. `activate_on_select` is optional and defaults to `false`. Input is
 ignored while the hotbar is hidden, disabled through `input_enabled`, a text field
 has focus, or an item is being dragged.
 
+## Inventory Tools
+
+### Query and display
+
+`SwiftItemQuery` combines its configured fields. IDs match any entry in `item_ids`, while `required_tags` and `required_instance_data` require every entry. `text` searches item names and IDs without case sensitivity.
+
+```gdscript
+var query := SwiftItemQuery.new()
+query.required_tags = [&"consumable"]
+query.text = "potion"
+
+var addresses := inventory.find_addresses(query, SwiftInventory.SortBy.QUANTITY, true)
+var first_address := inventory.find_first_address(query)
+var total_potions := inventory.count_items(query)
+
+grid.filter_query = query
+grid.sort_by = SwiftInventory.SortBy.NAME
+```
+
+`find_first_address()` returns `-1` when nothing matches. A filtered grid shows matching occupied addresses. Clear `filter_query` to show empty slots again. Grid sorting only changes display order, and a hotbar keeps its fixed address range. `get_visible_addresses()` returns the current display order. Reassign a query field after in-place edits to its arrays or dictionary, or call `grid.refresh_projection()` to update the view.
+
+### Organize and transfer
+
+- `inventory.merge_stacks()` fills compatible earlier stacks and returns the quantity moved. Item IDs and stack data determine compatibility through `can_stack_with()`.
+- `inventory.compact_stacks()` moves whole stacks into earlier empty slots that accept them and returns the number of stacks relocated.
+- Set `source_grid.quick_transfer_target` to a destination grid. Call `source_grid.quick_transfer(address)` for one stack or `source_grid.take_all()` for the entire source, including filtered-out items. Enable `quick_transfer_on_middle_click` to bind the gesture.
+- Connect `quick_transfer_finished(address, moved, remaining)` to show the result of each quick transfer attempt, including partial transfers and rejections.
+- For inventory-only code, call `source.transfer_stack_to(address, destination, quantity)` or `source.transfer_all_to(destination)`. Both return the number of items moved. A quantity of `-1` requests the entire stack. Destination rules still apply, and overflow stays in the source.
+
+### Item actions
+
+Extend `SwiftItemAction`, set its `id` and `display_name`, and assign the action to `SwiftItemData.actions`. Override `_can_execute(inventory, address, stack, actor)` to check gameplay conditions without changing state. Override `_execute(inventory, address, stack, actor)` to carry out the action and return an `Error`. The example potion action uses `inventory.try_remove(address, 1)`.
+
+Assign a `SwiftItemActionsMenu` to a container's `item_actions_menu` and optionally set `item_action_actor`. Right-click an occupied slot or press the Menu key or Shift+F10 when the slot has focus. The menu rechecks availability when selected and rejects actions for a stack that moved or was replaced. Gameplay code can call `action.can_execute(inventory, address, actor)` and `action.execute(inventory, address, actor)` directly.
+
+Set `slot_transfer_enabled` on a shared `SwiftItemActionsMenu` to offer **Move stack** in the slot menu. To offer a dedicated Move button, call `choose_move_source()`. Click a slot or focus it and press Enter to choose the source and destination. The move uses the same inventory rules as drag and drop. Press Escape to cancel. The menu emits `move_finished(moved, remaining, result)` for host UI feedback.
+
+### World pickup and drop
+
+Add `SwiftWorldPickup` as a child of the 2D or 3D scene that owns the pickup's visuals and interaction. Set `initial_stack` for a placed pickup. For a dropped item, instantiate an empty pickup scene and call `pickup.try_drop(inventory, address, quantity)` before adding the scene to the world. A return value of zero means the scene received nothing.
+
+Call `pickup.try_pickup(inventory)` from the game's interaction code. Use an optional quantity for a partial pickup. Both operations return the number of items moved and leave overflow where it started. Use `stack_changed` to update the world visual and `get_stack()` to read an independent snapshot for display. The game controls placement, collision, and when to remove an empty pickup.
+
 ## 🫳 Runtime Drag and Drop
 
 `SwiftSlot` implements Godot's built-in drag-and-drop callbacks:
@@ -666,6 +722,7 @@ The original pointer offset property `position_offest` remains supported; `posit
 | `SwiftItemData` | `icon` | Texture displayed by `SwiftSlot` |
 | `SwiftItemData` | `max_stack_size` | Maximum quantity accepted by a stack |
 | `SwiftItemData` | `tags` | Game-defined item categories |
+| `SwiftItemData` | `actions` | Item actions offered in the slot context menu |
 | `SwiftItemStack` | `item_data` | Item definition represented by the stack |
 | `SwiftItemStack` | `amount` | Current stack quantity |
 | `SwiftItemStack` | `instance_data` | Stack-specific custom state used when deciding whether two stacks can merge |
@@ -698,11 +755,6 @@ The original pointer offset property `position_offest` remains supported; `posit
 | `SwiftInfo` | `on_info_changed` | Signal emitted when the hovered item changes |
 
 </details>
-
-## Verification
-
-See [the test guide](tests/README.md) for regression, rendered input, and editor
-undo/redo checks, including commands for selecting a Godot executable.
 
 ## 🫶 Support
 

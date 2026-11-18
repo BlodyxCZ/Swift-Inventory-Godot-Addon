@@ -61,6 +61,24 @@ static var _persistence_owners: Dictionary[String, WeakRef] = {}
 		update_configuration_warnings()
 @export_group("")
 
+@export_group("Item Actions")
+## Optional context menu that opens from any occupied slot in this container.
+@export var item_actions_menu: SwiftItemActionsMenu:
+	set(value):
+		if not Engine.is_editor_hint() and is_instance_valid(item_actions_menu):
+			if item_actions_menu.slot_transfer_enabled_changed.is_connected(_item_actions_menu_changed):
+				item_actions_menu.slot_transfer_enabled_changed.disconnect(_item_actions_menu_changed)
+		item_actions_menu = value
+		if not Engine.is_editor_hint():
+			if is_instance_valid(item_actions_menu):
+				item_actions_menu.slot_transfer_enabled_changed.connect(_item_actions_menu_changed)
+			for slot in _get_slot_children():
+				_connect_slot_actions(slot)
+			_item_actions_menu_changed()
+## Optional gameplay actor passed to the configured menu's item actions.
+@export var item_action_actor: Node
+@export_group("")
+
 var _persistence_inventory: SwiftInventory
 var _persistence_path: String = ""
 var _persistence_key: String = ""
@@ -68,6 +86,7 @@ var _persistence_revision: int = 0
 var _persistence_active: bool = false
 var _save_pending: bool = false
 var _leaving_tree: bool = false
+var _focus_entry: SwiftSlot
 
 
 func _on_swift_change(change: SwiftInventory.CHANGES, from_address: int, to_address: int) -> void:
@@ -108,6 +127,11 @@ func _reconcile_address(_address: int) -> void:
 func _ready() -> void:
 	_start_persistence()
 	_reconcile_all()
+	if not Engine.is_editor_hint():
+		for slot in _get_slot_children():
+			_connect_slot_actions(slot)
+			_configure_slot_focus(slot)
+		_item_actions_menu_changed()
 
 
 func _enter_tree() -> void:
@@ -242,16 +266,106 @@ func _create_slot(index: int, pos: Vector2 = Vector2.ZERO) -> SwiftSlot:
 	var slot: SwiftSlot = SwiftSlot.new()
 	add_child(slot)
 	slot.setup()
+	if not Engine.is_editor_hint():
+		_connect_slot_actions(slot)
+		_configure_slot_focus(slot)
 	slot.name = ("Slot_%s" % index).pad_zeros(2)
 	slot.size = slot_size
 	slot.position = pos - Vector2(slot_size) / 2
 	return slot
 
 
+func _connect_slot_actions(slot: SwiftSlot) -> void:
+	var connected := slot.item_actions_requested.is_connected(_open_item_actions)
+	if is_instance_valid(item_actions_menu) and not connected:
+		slot.item_actions_requested.connect(_open_item_actions)
+	elif not is_instance_valid(item_actions_menu) and connected:
+		slot.item_actions_requested.disconnect(_open_item_actions)
+
+
+func _open_item_actions(slot: SwiftSlot) -> void:
+	if is_instance_valid(item_actions_menu):
+		item_actions_menu.open_for_slot(slot, item_action_actor, slot._keyboard_actions_requested)
+
+
+func _item_actions_menu_changed() -> void:
+	pass
+
+
+func _input(event: InputEvent) -> void:
+	if (
+		not Engine.is_editor_hint()
+		and is_visible_in_tree()
+		and is_instance_valid(item_actions_menu)
+		and not item_actions_menu.visible
+		and item_actions_menu.has_move_selection()
+		and event.is_action_pressed(&"ui_cancel")
+	):
+		get_viewport().set_input_as_handled()
+		item_actions_menu.cancel_move()
+
+
+func _configure_slot_focus(slot: SwiftSlot) -> void:
+	if slot.focus_mode == Control.FOCUS_NONE:
+		return
+	var enter := _set_focus_entry.bind(slot)
+	if not slot.focus_entered.is_connected(enter):
+		slot.focus_entered.connect(enter)
+	if not is_instance_valid(_focus_entry):
+		_set_focus_entry(slot)
+	elif _focus_entry != slot:
+		slot.focus_mode = Control.FOCUS_CLICK
+
+
+func _set_focus_entry(slot: SwiftSlot) -> void:
+	if is_instance_valid(_focus_entry) and _focus_entry != slot:
+		_focus_entry.focus_mode = Control.FOCUS_CLICK
+	_focus_entry = slot
+	slot.focus_mode = Control.FOCUS_ALL
+
+
+func _focus_slot_in_direction(from: SwiftSlot, direction: Vector2) -> void:
+	var origin := from.get_global_rect().get_center()
+	var closest: SwiftSlot
+	var best_score := INF
+	for candidate in _get_slot_children():
+		if candidate == from or not candidate.is_visible_in_tree() or candidate.focus_mode == FOCUS_NONE:
+			continue
+		var delta := candidate.get_global_rect().get_center() - origin
+		var along := delta.dot(direction)
+		var perpendicular := absf(delta.cross(direction))
+		if along > 0.0 and perpendicular <= along:
+			var score := along + perpendicular * 3.0
+			if score < best_score:
+				best_score = score
+				closest = candidate
+	if closest != null:
+		closest.grab_focus()
+
+
 func _remove_slot_node(slot: SwiftSlot) -> void:
+	var restore_focus := slot.has_focus()
 	if slot.get_parent() == self:
 		remove_child(slot)
+	if slot == _focus_entry:
+		_focus_entry = null
+		for candidate in _get_slot_children():
+			if candidate.focus_mode != Control.FOCUS_NONE:
+				_set_focus_entry(candidate)
+				break
+	if restore_focus:
+		_restore_slot_focus.call_deferred()
 	slot.queue_free()
+
+
+func _restore_slot_focus() -> void:
+	if (
+		is_visible_in_tree()
+		and is_instance_valid(_focus_entry)
+		and _focus_entry.is_visible_in_tree()
+		and get_viewport().gui_get_focus_owner() == null
+	):
+		_focus_entry.grab_focus()
 
 
 func _get_slot_children() -> Array[SwiftSlot]:

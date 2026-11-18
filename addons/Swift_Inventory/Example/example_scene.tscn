@@ -9,13 +9,20 @@
 [ext_resource type="Script" uid="uid://n72h5cs3yd3b" path="res://addons/Swift_Inventory/Classes/SwiftRule.gd" id="4_txi3l"]
 [ext_resource type="Resource" uid="uid://ckdshb04wcb7" path="res://addons/Swift_Inventory/Example/ItemsData/potion_data.tres" id="5_8wodt"]
 [ext_resource type="Resource" uid="uid://dtwuywatdmtxm" path="res://addons/Swift_Inventory/Example/Inventories/player_inventory.tres" id="6_wpwti"]
-[ext_resource type="Script" uid="uid://bxikxeqm4i4e3" path="res://addons/Swift_Inventory/Example/Scripts/example_info_panel.gd" id="7_6umnx"]
-[ext_resource type="Script" uid="uid://d23wkaooq0n8c" path="res://addons/Swift_Inventory/Classes/SwiftInfo.gd" id="7_wpwti"]
 [ext_resource type="Resource" uid="uid://wao11fbqyqwb" path="res://addons/Swift_Inventory/Example/Inventories/drop_inventory.tres" id="9_nih2c"]
 [ext_resource type="Resource" uid="uid://b3xo1gesvo8gj" path="res://addons/Swift_Inventory/Example/Inventories/player_equipment.tres" id="10_gjult"]
 [ext_resource type="Resource" uid="uid://bcep8j4mlp35m" path="res://addons/Swift_Inventory/Example/Inventories/enchant_inventory.tres" id="15_ap8bg"]
 [ext_resource type="Script" uid="uid://cspbl83is6ax4" path="res://addons/Swift_Inventory/Example/Scripts/enchanting.gd" id="15_d8rl0"]
+[ext_resource type="Theme" uid="uid://djhuscsnbjaqy" path="res://addons/Swift_Inventory/Example/demo_theme.tres" id="demo_theme"]
 [ext_resource type="Script" uid="uid://dhy6gv7gqku00" path="res://addons/Swift_Inventory/Classes/SwiftHotbar.gd" id="hotbar"]
+[ext_resource type="Script" uid="uid://dy0m2rkwf8aby" path="res://addons/Swift_Inventory/Example/Scripts/inventory_ux_example.gd" id="inventory_ux"]
+[ext_resource type="Script" uid="uid://dbhcwhjwna3be" path="res://addons/Swift_Inventory/Classes/SwiftItemActionsMenu.gd" id="item_actions"]
+[ext_resource type="Script" uid="uid://dxy153y1n8dcu" path="res://addons/Swift_Inventory/Example/Scripts/example_item_details.gd" id="item_details"]
+[ext_resource type="Script" path="res://addons/Swift_Inventory/Example/Scripts/example_equipment_labels.gd" id="equipment_labels"]
+[ext_resource type="Script" uid="uid://bfvxavpohrr1h" path="res://addons/Swift_Inventory/Example/Scripts/example_workbench_flow.gd" id="workbench_flow"]
+[ext_resource type="Script" uid="uid://dnjuyux0qrv4" path="res://addons/Swift_Inventory/Classes/SwiftWorldPickup.gd" id="world_pickup"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBox_clear"]
 
 [sub_resource type="Resource" id="Resource_6umnx"]
 script = ExtResource("2_6umnx")
@@ -72,192 +79,401 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("demo_theme")
+script = ExtResource("inventory_ux")
 
-[node name="ChestInventory" type="VBoxContainer" parent="." unique_id=1238556323]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 33.0
-offset_right = 706.0
-offset_bottom = 348.0
+[node name="Background" type="ColorRect" parent="." unique_id=349738090]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.055, 0.072, 0.088, 1)
 
-[node name="Label" type="Label" parent="ChestInventory" unique_id=575767647]
+[node name="ScreenMargins" type="MarginContainer" parent="." unique_id=2123660610]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Layout" type="VBoxContainer" parent="ScreenMargins" unique_id=1664785852]
 layout_mode = 2
-text = "Chest Inventory"
-horizontal_alignment = 1
+mouse_filter = 2
+theme_override_constants/separation = 8
 
-[node name="PanelContainer" type="PanelContainer" parent="ChestInventory" unique_id=381941578]
-custom_minimum_size = Vector2(696, 288)
+[node name="DemoHeading" type="Label" parent="ScreenMargins/Layout" unique_id=1718364283]
 layout_mode = 2
+theme_type_variation = &"PageTitle"
+text = "Swift Inventory - Example Scene"
 
-[node name="MarginContainer" type="MarginContainer" parent="ChestInventory/PanelContainer" unique_id=826997390]
+[node name="ContentScroll" type="ScrollContainer" parent="ScreenMargins/Layout" unique_id=1039703375]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 4
 
-[node name="Chest_SwiftGrid" type="Container" parent="ChestInventory/PanelContainer/MarginContainer" unique_id=95560836]
-custom_minimum_size = Vector2(64, 268)
+[node name="DemoContent" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll" unique_id=725230085]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Inventories" type="HFlowContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent" unique_id=2102116168]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="ChestInventory" type="PanelContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories" unique_id=1238556323]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.53
+
+[node name="ChestBody" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory" unique_id=814757551]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Heading" type="HBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody" unique_id=365400169]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Label" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody/Heading" unique_id=575767647]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RegionTitle"
+text = "Chest"
+
+[node name="ChestCapacity" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody/Heading" unique_id=2096583727]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Occupied slots / capacity"
+theme_type_variation = &"SecondaryLabel"
+text = "6 / 40 slots"
+vertical_alignment = 1
+
+[node name="SearchRow" type="HBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody" unique_id=1515489662]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ChestFilter" type="LineEdit" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody/SearchRow" unique_id=554901895]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(130, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Filter chest"
+clear_button_enabled = true
+
+[node name="SortChest" type="Button" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody/SearchRow" unique_id=2096240397]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+toggle_mode = true
+text = "Sort by name"
+
+[node name="ChestActions" type="HFlowContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody" unique_id=1176690203]
+layout_mode = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="MergeChest" type="Button" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody/ChestActions" unique_id=473443863]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+tooltip_text = "Combine compatible stacks in the chest."
+text = "Merge stacks"
+
+[node name="CompactChest" type="Button" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody/ChestActions" unique_id=1108959997]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+tooltip_text = "Move whole stacks into earlier empty chest slots."
+text = "Compact"
+
+[node name="TakeAll" type="Button" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody/ChestActions" unique_id=1763729782]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+tooltip_text = "Transfer all chest items to the player, including filtered items."
+theme_type_variation = &"PrimaryButton"
+text = "Take all"
+
+[node name="ChestSlots" type="PanelContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody" unique_id=381941578]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_clear")
+
+[node name="ChestGrid" type="Container" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody/ChestSlots" unique_id=95560836]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(42, 180)
 layout_mode = 2
 script = ExtResource("1_gswx4")
 inventory_size = 40
+separation = Vector2i(3, 4)
+scale_slots_to_width = true
+max_columns = 10
 swift_inventory = SubResource("Resource_txi3l")
-slot_size = Vector2i(64, 64)
+slot_size = Vector2i(42, 42)
 metadata/_custom_type_script = "uid://dnp6muoj3e72d"
 
-[node name="PlayerInventory" type="VBoxContainer" parent="." unique_id=713867381]
-layout_mode = 0
-offset_left = 715.0
-offset_top = 32.0
-offset_right = 1139.0
-offset_bottom = 279.0
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="PlayerInventory" unique_id=529326589]
+[node name="ChestEmptyState" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody/ChestSlots" unique_id=1132029952]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
-text = "Player Inventory"
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ChestEmptyMessage" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody/ChestSlots/ChestEmptyState" unique_id=159207651]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Chest is empty."
 horizontal_alignment = 1
+autowrap_mode = 3
 
-[node name="PanelContainer" type="PanelContainer" parent="PlayerInventory" unique_id=1046541245]
-custom_minimum_size = Vector2(424, 220)
+[node name="ClearChestFilter" type="Button" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ChestInventory/ChestBody/ChestSlots/ChestEmptyState" unique_id=1538477484]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_horizontal = 4
+text = "Clear filter"
 
-[node name="MarginContainer" type="MarginContainer" parent="PlayerInventory/PanelContainer" unique_id=1051839577]
+[node name="PlayerInventory" type="PanelContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories" unique_id=713867381]
+custom_minimum_size = Vector2(312, 0)
 layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+size_flags_horizontal = 3
 
-[node name="SwiftGrid" type="Container" parent="PlayerInventory/PanelContainer/MarginContainer" unique_id=419556035]
-custom_minimum_size = Vector2(64, 200)
+[node name="PlayerBody" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory" unique_id=1732807824]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Heading" type="HBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory/PlayerBody" unique_id=306519532]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Label" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory/PlayerBody/Heading" unique_id=529326589]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RegionTitle"
+text = "Player inventory"
+
+[node name="PlayerCapacity" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory/PlayerBody/Heading" unique_id=561503020]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Occupied slots / capacity"
+theme_type_variation = &"SecondaryLabel"
+text = "1 / 18 slots"
+vertical_alignment = 1
+
+[node name="PlayerGrid" type="Container" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory/PlayerBody" unique_id=419556035]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 152)
 layout_mode = 2
 script = ExtResource("1_gswx4")
 inventory_size = 18
 swift_inventory = ExtResource("6_wpwti")
-slot_size = Vector2i(64, 64)
+slot_size = Vector2i(48, 48)
+scale_slots_to_width = true
+max_columns = 7
 metadata/_custom_type_script = "uid://dnp6muoj3e72d"
 
-[node name="PlayerHotbar" type="VBoxContainer" parent="." unique_id=1866165017]
-layout_mode = 0
-offset_left = 717.0
-offset_top = 285.0
-offset_right = 1137.0
-offset_bottom = 392.0
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="PlayerHotbar" unique_id=1237746224]
+[node name="HotbarLabel" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory/PlayerBody" unique_id=1237746224]
 layout_mode = 2
-size_flags_vertical = 1
-text = "Player Hotbar"
-horizontal_alignment = 1
+theme_type_variation = &"SecondaryLabel"
+text = "Hotbar"
 
-[node name="PanelContainer" type="PanelContainer" parent="PlayerHotbar" unique_id=2108591528]
-layout_mode = 2
-size_flags_horizontal = 17
-size_flags_vertical = 19
-
-[node name="MarginContainer" type="MarginContainer" parent="PlayerHotbar/PanelContainer" unique_id=2131793939]
-layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
-
-[node name="SwiftHotbar" type="Container" parent="PlayerHotbar/PanelContainer/MarginContainer" unique_id=1264197062]
-custom_minimum_size = Vector2(404, 64)
+[node name="Hotbar" type="Container" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory/PlayerBody" unique_id=1264197062]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(284, 44)
 layout_mode = 2
 script = ExtResource("hotbar")
 slot_count = 6
-selected_index = 1
+selected_index = 2
+selected_color = Color(0.96, 0.75, 0.39, 1)
 swift_inventory = ExtResource("6_wpwti")
-slot_size = Vector2i(64, 64)
+slot_size = Vector2i(44, 44)
+scale_slots_to_width = true
 metadata/_custom_type_script = "uid://dhy6gv7gqku00"
 
-[node name="PlayerEquipment" type="VBoxContainer" parent="." unique_id=2115366042]
-layout_mode = 0
-offset_left = 838.0
-offset_top = 404.0
-offset_right = 1134.0
-offset_bottom = 538.0
-
-[node name="Label" type="Label" parent="PlayerEquipment" unique_id=1387930589]
+[node name="WorldTools" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory/PlayerBody" unique_id=925526785]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 1
-text = "Player Equipment"
-horizontal_alignment = 1
+theme_override_constants/separation = 6
 
-[node name="PanelContainer" type="PanelContainer" parent="PlayerEquipment" unique_id=720863692]
+[node name="GroundItems" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory/PlayerBody/WorldTools" unique_id=1096345029]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 17
-size_flags_vertical = 19
+text = "World pile"
+autowrap_mode = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="PlayerEquipment/PanelContainer" unique_id=1515883922]
+[node name="WorldActions" type="HFlowContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory/PlayerBody/WorldTools" unique_id=622188222]
 layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PlayerEquipment/PanelContainer/MarginContainer" unique_id=350717525]
+[node name="PickUp" type="Button" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory/PlayerBody/WorldTools/WorldActions" unique_id=512444679]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
-size_flags_horizontal = 17
-size_flags_vertical = 17
+tooltip_text = "Pick up items from the world pile into the player inventory."
+text = "Pick up"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PlayerEquipment/PanelContainer/MarginContainer/VBoxContainer" unique_id=1173999700]
+[node name="DropFromHotbar" type="Button" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/PlayerInventory/PlayerBody/WorldTools/WorldActions" unique_id=1175260222]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
-size_flags_horizontal = 17
-size_flags_vertical = 19
-theme_override_constants/separation = 56
-alignment = 1
+tooltip_text = "Drop one item from the selected hotbar slot into the world pile."
+text = "Drop one from hotbar"
 
-[node name="Label" type="Label" parent="PlayerEquipment/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=650608886]
+[node name="ItemDetails" type="PanelContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories" unique_id=1894921017]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
-text = "Sword"
-horizontal_alignment = 1
-vertical_alignment = 1
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.35
+theme_type_variation = &"InspectorPanel"
+script = ExtResource("item_details")
 
-[node name="Label2" type="Label" parent="PlayerEquipment/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=105128531]
+[node name="DetailsBody" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails" unique_id=1252225199]
 layout_mode = 2
-text = "Potion"
-horizontal_alignment = 1
-vertical_alignment = 1
+theme_override_constants/separation = 7
 
-[node name="Label3" type="Label" parent="PlayerEquipment/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1587053739]
+[node name="Heading" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody" unique_id=1536638641]
 layout_mode = 2
-text = "Crystal"
-horizontal_alignment = 1
-vertical_alignment = 1
+theme_type_variation = &"SecondaryLabel"
+text = "Item details"
 
-[node name="SwiftGrid" type="Container" parent="PlayerEquipment/PanelContainer/MarginContainer/VBoxContainer" unique_id=1565448050]
-custom_minimum_size = Vector2(264, 64)
+[node name="ItemLocation" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody" unique_id=834070291]
+unique_name_in_owner = true
 layout_mode = 2
-script = ExtResource("1_gswx4")
-inventory_size = 3
-separation = Vector2i(44, 44)
-swift_inventory = ExtResource("10_gjult")
-slot_size = Vector2i(64, 64)
-metadata/_custom_type_script = "uid://dnp6muoj3e72d"
+theme_type_variation = &"SecondaryLabel"
+autowrap_mode = 3
 
-[node name="DropArea" type="VBoxContainer" parent="." unique_id=1927104511]
-layout_mode = 0
-offset_left = 37.0
-offset_top = 370.0
-offset_right = 370.0
-offset_bottom = 617.0
-
-[node name="Label" type="Label" parent="DropArea" unique_id=1904685971]
+[node name="ItemIdentity" type="HBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody" unique_id=782924916]
 layout_mode = 2
-size_flags_vertical = 1
-text = "Drop Area"
-horizontal_alignment = 1
+theme_override_constants/separation = 8
 
-[node name="Panel" type="Panel" parent="DropArea" unique_id=761507328]
+[node name="ArtworkPlate" type="PanelContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody/ItemIdentity" unique_id=225772860]
+custom_minimum_size = Vector2(62, 62)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"ArtworkPanel"
+
+[node name="ItemArtwork" type="TextureRect" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody/ItemIdentity/ArtworkPlate" unique_id=753002134]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ItemText" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody/ItemIdentity" unique_id=648359007]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 3
+
+[node name="ItemName" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody/ItemIdentity/ItemText" unique_id=1465918088]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ItemTitle"
+text = "Select a slot"
+autowrap_mode = 3
+
+[node name="ItemQuantity" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody/ItemIdentity/ItemText" unique_id=1252665389]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SecondaryLabel"
+autowrap_mode = 3
+
+[node name="ItemDescription" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody" unique_id=484778454]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SecondaryLabel"
+autowrap_mode = 3
+
+[node name="ItemMetadata" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody" unique_id=934334159]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"SecondaryLabel"
+autowrap_mode = 3
+
+[node name="Actions" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody" unique_id=432426246]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SelectedItemAction" type="Button" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody/Actions" unique_id=1752200081]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+
+[node name="SelectedItemTransfer" type="Button" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody/Actions" unique_id=1745668799]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="MoveItem" type="Button" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Inventories/ItemDetails/DetailsBody/Actions" unique_id=120965865]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+tooltip_text = "Choose the destination for this stack without dragging."
+text = "Move stack"
+
+[node name="Workbench" type="PanelContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent" unique_id=1749982526]
 layout_mode = 2
 size_flags_vertical = 3
+theme_type_variation = &"WorkbenchPanel"
 
-[node name="SwiftDropArea" type="Container" parent="DropArea/Panel" unique_id=101203171]
+[node name="OtherInventories" type="HFlowContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench" unique_id=1559463725]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+script = ExtResource("workbench_flow")
+
+[node name="DropArea" type="PanelContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories" unique_id=1927104511]
+custom_minimum_size = Vector2(210, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.25
+theme_type_variation = &"UtilityPanel"
+
+[node name="StorageBody" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/DropArea" unique_id=1826180835]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/DropArea/StorageBody" unique_id=1904685971]
+layout_mode = 2
+text = "Temporary storage"
+
+[node name="Panel" type="Panel" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/DropArea/StorageBody" unique_id=761507328]
+custom_minimum_size = Vector2(0, 90)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_type_variation = &"StoragePanel"
+
+[node name="TemporaryStorage" type="Container" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/DropArea/StorageBody/Panel" unique_id=101203171]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -266,120 +482,152 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_6umnx")
 swift_inventory = ExtResource("9_nih2c")
-slot_size = Vector2i(64, 64)
+slot_size = Vector2i(44, 44)
 metadata/_custom_type_script = "uid://ct5e5bb1c06p0"
 
-[node name="PersistentInventory" type="VBoxContainer" parent="." unique_id=235655738]
-layout_mode = 0
-offset_left = 398.0
-offset_top = 366.0
-offset_right = 682.0
-offset_bottom = 473.0
-
-[node name="Label" type="Label" parent="PersistentInventory" unique_id=1317257316]
+[node name="PersistentInventory" type="PanelContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories" unique_id=235655738]
+custom_minimum_size = Vector2(224, 0)
 layout_mode = 2
-text = "Persistent Inventory"
-horizontal_alignment = 1
-vertical_alignment = 1
+size_flags_horizontal = 3
+theme_type_variation = &"UtilityPanel"
 
-[node name="PanelContainer" type="PanelContainer" parent="PersistentInventory" unique_id=1206598923]
+[node name="PersistentBody" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/PersistentInventory" unique_id=1046265998]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="PersistentInventory/PanelContainer" unique_id=409712759]
+[node name="Label" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/PersistentInventory/PersistentBody" unique_id=279259419]
 layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+text = "Persistent inventory"
 
-[node name="SwiftGrid" type="Container" parent="PersistentInventory/PanelContainer/MarginContainer" unique_id=251434522]
-custom_minimum_size = Vector2(64, 64)
+[node name="PersistentGrid" type="Container" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/PersistentInventory/PersistentBody" unique_id=251434522]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 script = ExtResource("1_gswx4")
 inventory_size = 4
 swift_inventory = SubResource("Resource_egemx")
-slot_size = Vector2i(64, 64)
+slot_size = Vector2i(48, 48)
+scale_slots_to_width = true
+max_columns = 4
 auto_persist = true
 save_path = "user://saves/persistent.tres"
 metadata/_custom_type_script = "uid://dnp6muoj3e72d"
 
-[node name="SwiftInfo" type="Control" parent="." unique_id=1574952974]
-z_index = 1
-anchors_preset = 0
-mouse_filter = 2
-script = ExtResource("7_wpwti")
-metadata/_custom_type_script = "uid://d23wkaooq0n8c"
-
-[node name="PanelContainer" type="PanelContainer" parent="SwiftInfo" unique_id=1500414737]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("7_6umnx")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="SwiftInfo/PanelContainer" unique_id=647450917]
+[node name="PlayerEquipment" type="PanelContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories" unique_id=2115366042]
+custom_minimum_size = Vector2(204, 0)
 layout_mode = 2
-theme_override_constants/separation = 0
+size_flags_horizontal = 3
+theme_type_variation = &"UtilityPanel"
 
-[node name="Label" type="Label" parent="SwiftInfo/PanelContainer/VBoxContainer" unique_id=460789399]
+[node name="EquipmentBody" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/PlayerEquipment" unique_id=1220283127]
 layout_mode = 2
+
+[node name="Label" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/PlayerEquipment/EquipmentBody" unique_id=1387930589]
+layout_mode = 2
+text = "Equipment"
+
+[node name="EquipmentLabels" type="HBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/PlayerEquipment/EquipmentBody" unique_id=1173999700 node_paths=PackedStringArray("grid")]
+layout_mode = 2
+theme_override_constants/separation = 8
+script = ExtResource("equipment_labels")
+grid = NodePath("../EquipmentGrid")
+
+[node name="Sword" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/PlayerEquipment/EquipmentBody/EquipmentLabels" unique_id=650608886]
+custom_minimum_size = Vector2(56, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Sword"
 horizontal_alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="SwiftInfo/PanelContainer/VBoxContainer" unique_id=1159475053]
+[node name="Potion" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/PlayerEquipment/EquipmentBody/EquipmentLabels" unique_id=266521109]
+custom_minimum_size = Vector2(56, 0)
 layout_mode = 2
-
-[node name="Label2" type="Label" parent="SwiftInfo/PanelContainer/VBoxContainer" unique_id=1246020903]
-layout_mode = 2
-size_flags_vertical = 3
+theme_override_font_sizes/font_size = 16
+text = "Potion"
 horizontal_alignment = 1
 
-[node name="HSeparator2" type="HSeparator" parent="SwiftInfo/PanelContainer/VBoxContainer" unique_id=658678072]
+[node name="Crystal" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/PlayerEquipment/EquipmentBody/EquipmentLabels" unique_id=1587053739]
+custom_minimum_size = Vector2(56, 0)
 layout_mode = 2
-
-[node name="Label3" type="Label" parent="SwiftInfo/PanelContainer/VBoxContainer" unique_id=561785425]
-layout_mode = 2
-size_flags_vertical = 3
+theme_override_font_sizes/font_size = 16
+text = "Crystal"
 horizontal_alignment = 1
 
-[node name="EnchantInventory" type="VBoxContainer" parent="." unique_id=136640791 node_paths=PackedStringArray("enchanting_grid")]
-layout_mode = 0
-offset_left = 714.0
-offset_top = 404.0
-offset_right = 802.0
-offset_bottom = 546.0
+[node name="EquipmentGrid" type="Container" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/PlayerEquipment/EquipmentBody" unique_id=1565448050]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+script = ExtResource("1_gswx4")
+inventory_size = 3
+separation = Vector2i(8, 4)
+swift_inventory = ExtResource("10_gjult")
+slot_size = Vector2i(56, 56)
+scale_slots_to_width = true
+max_columns = 3
+metadata/_custom_type_script = "uid://dnp6muoj3e72d"
+
+[node name="EnchantCard" type="PanelContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories" unique_id=252755061]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"UtilityPanel"
+
+[node name="EnchantInventory" type="VBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/EnchantCard" unique_id=136640791 node_paths=PackedStringArray("enchanting_grid")]
+unique_name_in_owner = true
+layout_mode = 2
 script = ExtResource("15_d8rl0")
-enchanting_grid = NodePath("PanelContainer/CenterContainer/MarginContainer/SwiftGrid")
+enchanting_grid = NodePath("EnchantSlots/EnchantingGrid")
 
-[node name="Label" type="Label" parent="EnchantInventory" unique_id=975955333]
+[node name="Label" type="Label" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/EnchantCard/EnchantInventory" unique_id=975955333]
 layout_mode = 2
 text = "Enchanting"
-horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="PanelContainer" type="PanelContainer" parent="EnchantInventory" unique_id=276082461]
+[node name="EnchantSlots" type="HBoxContainer" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/EnchantCard/EnchantInventory" unique_id=277606201]
 layout_mode = 2
+theme_override_constants/separation = 8
 
-[node name="CenterContainer" type="CenterContainer" parent="EnchantInventory/PanelContainer" unique_id=656056835]
+[node name="EnchantingGrid" type="Container" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/EnchantCard/EnchantInventory/EnchantSlots" unique_id=2095746364]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="EnchantInventory/PanelContainer/CenterContainer" unique_id=1283774637]
-layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
-
-[node name="SwiftGrid" type="Container" parent="EnchantInventory/PanelContainer/CenterContainer/MarginContainer" unique_id=2095746364]
-custom_minimum_size = Vector2(64, 64)
-layout_mode = 2
+size_flags_horizontal = 3
 script = ExtResource("1_gswx4")
 inventory_size = 1
 swift_inventory = ExtResource("15_ap8bg")
-slot_size = Vector2i(64, 64)
+slot_size = Vector2i(48, 48)
+scale_slots_to_width = true
+max_columns = 1
 metadata/_custom_type_script = "uid://dnp6muoj3e72d"
 
-[node name="Button" type="Button" parent="EnchantInventory" unique_id=371251330]
+[node name="EnchantButton" type="Button" parent="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/EnchantCard/EnchantInventory/EnchantSlots" unique_id=371251330]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+size_flags_stretch_ratio = 1.75
 text = "Enchant!"
 
-[connection signal="on_info_changed" from="SwiftInfo" to="SwiftInfo/PanelContainer" method="_on_swift_info_on_info_changed"]
-[connection signal="pressed" from="EnchantInventory/Button" to="EnchantInventory" method="_on_button_pressed"]
+[node name="StatusBar" type="PanelContainer" parent="ScreenMargins/Layout" unique_id=2103200842]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"StatusPanel"
+
+[node name="InventoryNotice" type="Label" parent="ScreenMargins/Layout/StatusBar" unique_id=2087305165]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="WorldItems" type="Node2D" parent="." unique_id=657159876]
+
+[node name="GroundPile" type="Node" parent="WorldItems" unique_id=253257416]
+script = ExtResource("world_pickup")
+initial_stack = SubResource("Resource_pb7lq")
+
+[node name="ItemActions" type="PopupMenu" parent="." unique_id=98276205]
+script = ExtResource("item_actions")
+slot_transfer_enabled = true
+
+[connection signal="pressed" from="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/EnchantCard/EnchantInventory/EnchantSlots/EnchantButton" to="ScreenMargins/Layout/ContentScroll/DemoContent/Workbench/OtherInventories/EnchantCard/EnchantInventory" method="_on_button_pressed"]
+[connection signal="stack_changed" from="WorldItems/GroundPile" to="." method="_update_ground_label"]
+[connection signal="action_finished" from="ItemActions" to="." method="_on_action_finished"]

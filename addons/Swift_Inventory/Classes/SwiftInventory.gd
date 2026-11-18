@@ -12,6 +12,9 @@ signal on_change(type: CHANGES, from_address: int, to_address: int)
 # Existing enum values are kept for compatibility with consumers and serialized data.
 # gdlint: disable=enum-element-name
 enum CHANGES { add, remove, move, swap, transfer, set, size, inventory, rules }
+enum SortBy { ADDRESS, NAME, ITEM_ID, QUANTITY }
+
+const _MAX_ITEM_COUNT: int = 9223372036854775807
 
 ## Shrinking removes out-of-range contents and per-address rules.
 @export_storage var size: int = 0:
@@ -53,6 +56,17 @@ enum CHANGES { add, remove, move, swap, transfer, set, size, inventory, rules }
 @export_storage var format_version: int = 1
 
 var _suppress_changes: bool = false
+
+
+func _restore_resize_contents(
+	stacks: Dictionary[int, SwiftItemStack], rules_by_address: Dictionary[int, SwiftRule]
+) -> void:
+	var was_suppressed := _suppress_changes
+	_suppress_changes = true
+	inventory = stacks
+	slot_rules = rules_by_address.duplicate()
+	_suppress_changes = was_suppressed
+	_emit_change(CHANGES.inventory, -1, -1)
 
 
 ## Adds definition-only items. Returns the uninserted quantity.
@@ -161,15 +175,44 @@ func try_transfer(
 	return quantity - moved
 
 
+## Transfers up to [param quantity] from one address, or the whole stack when it is -1.
+## Fills compatible stacks before empty addresses. Returns the quantity moved.
+func transfer_stack_to(from_address: int, target: SwiftInventory, quantity: int = -1) -> int:
+	var stack := self.get_stack(from_address)
+	if stack == null or target == null or target == self:
+		return 0
+	var requested := stack.amount if quantity == -1 else mini(quantity, stack.amount)
+	if requested <= 0:
+		return 0
+	var remaining := requested
+	for occupied in [true, false]:
+		for to_address in range(target.size):
+			if remaining == 0 or self.get_stack(from_address) != stack:
+				return requested - remaining
+			if target.has_stack(to_address) != occupied:
+				continue
+			var attempt := mini(stack.amount, remaining)
+			var unmoved := try_transfer(from_address, target, to_address, attempt)
+			remaining -= attempt - unmoved
+	return requested - remaining
+
+
+## Transfers every occupied address in ascending order. Returns the quantity moved.
+## The count saturates at the largest signed integer.
+func transfer_all_to(target: SwiftInventory) -> int:
+	if target == null or target == self:
+		return 0
+	var moved := 0
+	for address in find_addresses():
+		moved += mini(transfer_stack_to(address, target), _MAX_ITEM_COUNT - moved)
+	return moved
+
+
 ## Fills compatible stacks then every eligible empty address. Returns FAILED on overflow.
 func transfer_to(other_inventory: SwiftInventory) -> Error:
-	if other_inventory == null or other_inventory == self: return FAILED
-	for address in inventory.keys():
-		for occupied in [true, false]:
-			for to_address in range(other_inventory.size):
-				if not has_stack(address): break
-				if other_inventory.has_stack(to_address) != occupied: continue
-				try_transfer(address, other_inventory, to_address, self.get_stack(address).amount)
+	if other_inventory == null or other_inventory == self:
+		return FAILED
+	transfer_all_to(other_inventory)
 	return OK if inventory.is_empty() else FAILED
 
 
@@ -255,6 +298,95 @@ func get_stack(address: int) -> SwiftItemStack:
 	return stack if stack != null and stack.is_valid() else null
 
 
+## Returns occupied addresses matching [param query]. A null query accepts every stack.
+## Name and ID use case-insensitive natural ordering. Equal keys retain ascending addresses.
+func find_addresses(
+	query: SwiftItemQuery = null, sort_by: SortBy = SortBy.ADDRESS, descending: bool = false
+) -> Array[int]:
+	var addresses: Array[int] = []
+	for address in inventory:
+		var stack := self.get_stack(address)
+		if stack != null and (query == null or query.matches(stack)):
+			addresses.append(address)
+	if sort_by == SortBy.ADDRESS:
+		addresses.sort()
+		if descending:
+			addresses.reverse()
+	else:
+		addresses.sort_custom(
+			func(first: int, second: int) -> bool:
+				return _address_precedes(first, second, sort_by, descending)
+		)
+	return addresses
+
+
+## Returns the lowest occupied matching address, or -1 if no stack matches.
+func find_first_address(query: SwiftItemQuery = null) -> int:
+	var addresses := find_addresses(query)
+	return -1 if addresses.is_empty() else addresses[0]
+
+
+## Counts item quantities rather than slots. Saturates at the largest signed integer.
+func count_items(query: SwiftItemQuery = null) -> int:
+	var total := 0
+	for address in find_addresses(query):
+		total += mini(self.get_stack(address).amount, _MAX_ITEM_COUNT - total)
+	return total
+
+
+## Moves whole stacks into earlier empty addresses accepted by the destination rules.
+## Does not split stacks. Returns the number of stacks relocated.
+func compact_stacks() -> int:
+	if validate() != OK:
+		return 0
+	var moved := 0
+	var first_empty := 0
+	for address in find_addresses():
+		var stack := self.get_stack(address)
+		while first_empty < address and has_stack(first_empty):
+			first_empty += 1
+		for target_address in range(first_empty, address):
+			if has_stack(target_address):
+				continue
+			if get_insertable_quantity(target_address, stack) != stack.amount:
+				continue
+			inventory[target_address] = stack
+			inventory.erase(address)
+			stack._claim_inventory(self)
+			moved += 1
+			break
+	if moved > 0:
+		_emit_change(CHANGES.inventory, -1, -1)
+	return moved
+
+
+## Merges into earlier compatible stacks without filling empty addresses.
+## Returns the quantity moved, saturating at the largest signed integer.
+func merge_stacks() -> int:
+	if validate() != OK:
+		return 0
+	var moved := 0
+	var addresses := find_addresses()
+	var was_suppressed := _suppress_changes
+	_suppress_changes = true
+	for index in addresses.size():
+		var address := addresses[index]
+		for earlier_index in index:
+			var stack := self.get_stack(address)
+			if stack == null:
+				break
+			var target_address := addresses[earlier_index]
+			if not has_stack(target_address):
+				continue
+			var quantity := stack.amount
+			var transferred := quantity - try_move(address, target_address, quantity)
+			moved += mini(transferred, _MAX_ITEM_COUNT - moved)
+	_suppress_changes = was_suppressed
+	if moved > 0:
+		_emit_change(CHANGES.inventory, -1, -1)
+	return moved
+
+
 ## True when every address is occupied, irrespective of stack reserves or rules.
 func is_full() -> bool: return _get_first_empty_address() == -1
 
@@ -309,6 +441,26 @@ func load_from_file(path: String) -> Error:
 	_suppress_changes = false
 	_emit_change(CHANGES.inventory, -1, -1)
 	return OK
+
+
+func _address_precedes(first: int, second: int, sort_by: SortBy, descending: bool) -> bool:
+	var first_stack := self.get_stack(first)
+	var second_stack := self.get_stack(second)
+	var comparison := 0
+	match sort_by:
+		SortBy.NAME:
+			comparison = first_stack.item_data.display_name.naturalnocasecmp_to(
+				second_stack.item_data.display_name
+			)
+		SortBy.ITEM_ID:
+			comparison = String(first_stack.item_data.id).naturalnocasecmp_to(
+				String(second_stack.item_data.id)
+			)
+		SortBy.QUANTITY:
+			comparison = first_stack.amount - second_stack.amount
+	if comparison == 0:
+		return first < second
+	return comparison > 0 if descending else comparison < 0
 
 
 func _can_swap(first_address: int, second_address: int, other_inventory: SwiftInventory) -> bool:
